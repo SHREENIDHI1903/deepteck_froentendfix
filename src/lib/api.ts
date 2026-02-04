@@ -1,0 +1,1423 @@
+
+import { DayWorkSummary, Invoice } from "@/types";
+import { fromVoiceMemoRejection } from "@/lib/moderation/moderationEngine";
+
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}`;
+
+interface ApiError {
+  error: string;
+  message?: string;
+  code?: string;
+}
+
+class ApiClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    if (!baseUrl) {
+      console.log("ApiClient: baseUrl is required but was received as undefined.");
+      throw new Error("ApiClient: baseUrl is required but was received as undefined.");
+    }
+    this.baseUrl = baseUrl.endsWith('/')
+      ? baseUrl.slice(0, -1)
+      : baseUrl;
+  }
+
+  private getHeaders(token?: string): HeadersInit {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+  }
+
+  private async handleResponse<T>(response: Response): Promise<T> {
+    if (!response.ok) {
+      const error: ApiError = await response.json().catch(() => ({
+        error: 'Network error',
+        message: response.statusText,
+      }));
+
+      const err: any = new Error(error.message || error.error);
+      if ((error as any)?.code) err.code = (error as any).code;
+      err.status = response.status;
+      throw err;
+    }
+    return response.json() as Promise<T>;
+  }
+
+  get<T>(endpoint: string, token?: string): Promise<T> {
+    return fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'GET',
+      headers: this.getHeaders(token),
+    }).then(res => this.handleResponse<T>(res));
+  }
+
+  post<T>(endpoint: string, data?: any, token?: string): Promise<T> {
+    return fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers: this.getHeaders(token),
+      body: data ? JSON.stringify(data) : undefined,
+    }).then(res => this.handleResponse<T>(res));
+  }
+
+  put<T>(endpoint: string, data?: any, token?: string): Promise<T> {
+    return fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'PUT',
+      headers: this.getHeaders(token),
+      body: data ? JSON.stringify(data) : undefined,
+    }).then(res => this.handleResponse<T>(res));
+  }
+
+  patch<T>(endpoint: string, data?: any, token?: string): Promise<T> {
+    return fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(token),
+      body: data ? JSON.stringify(data) : undefined,
+    }).then(res => this.handleResponse<T>(res));
+  }
+
+  delete<T>(endpoint: string, data?: any, token?: string): Promise<T> {
+    return fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'DELETE',
+      headers: this.getHeaders(token),
+      body: data ? JSON.stringify(data) : undefined,
+    }).then(res => this.handleResponse<T>(res));
+  }
+
+  download(endpoint: string, token?: string): Promise<Blob> {
+    return fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'GET',
+      headers: this.getHeaders(token),
+    }).then(res => res.blob());
+  }
+
+}
+
+export const api = new ApiClient(API_BASE_URL);
+
+/* =========================
+   AUTH
+========================= */
+
+export const authApi = {
+  refreshToken: (refreshToken: string) =>
+    api.post<{ accessToken: string }>('/auth/refresh-token', { refreshToken }),
+
+  // Initiates Google OAuth flow. Verification is handled ONLY in CallbackPage.
+  initiateGoogleOAuth: (intent: "login" | "signup" = "login") =>
+    api.post<{ success: boolean; data: { url: string } }>(
+      '/auth/google',
+      { intent }
+    ),
+
+  login: (email: string, password: string) =>
+    api.post<{
+      success: boolean;
+      message: string;
+      data: { user: any; tokens: { accessToken: string; refreshToken: string } };
+    }>('/auth/login', { email, password }),
+
+  register: (data: any) =>
+    api.post<{
+      success: boolean;
+      message: string;
+      data: { user: any; tokens: { accessToken: string; refreshToken: string } };
+    }>('/auth/register', data),
+
+  logout: (token: string) =>
+    api.post('/auth/logout', undefined, token),
+
+  getMe: (token: string) =>
+    api.get<{ success: boolean; data: { user: any } }>('/profile/me', token),
+
+  updateProfile: (token: string, data: any) => {
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== undefined)
+    );
+
+    return api.patch<{ success: boolean; data: { user: any } }>(
+      '/profile/me',
+      cleanData,
+      token
+    );
+  },
+
+  sendEmailOtp: (email: string) =>
+    api.post<{
+      success: boolean;
+      message: string;
+    }>("/auth/email/send-otp", { email }),
+
+  verifyEmailOtp: (data: { email: string; otp: string }) =>
+    api.post<{
+      success: boolean;
+      message: string;
+      data?: { signupTicket: string };
+    }>("/auth/email/verify-otp", data),
+
+  setOrChangePassword: (data: { password: string }, token: string) =>
+    api.post<{ success: boolean; message: string }>(
+      '/auth/password/set-or-change',
+      data,
+      token
+    ),
+
+  forgotPassword: (email: string) =>
+    api.post<{ success: boolean; message: string; data?: { redirectTo?: string } }>(
+      "/auth/password/forgot",
+      { email }
+    ),
+
+  resetPassword: (data: { accessToken: string; refreshToken: string; password: string }) =>
+    api.post<{ success: boolean; message: string }>("/auth/password/reset", data),
+
+  uploadProfileMedia: async (
+    token: string,
+    file: File,
+    type: 'avatar' | 'banner'
+  ) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch(
+      `${API_BASE_URL}/profile/media?type=${type}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || 'Upload failed');
+    }
+
+    return res.json(); // { success, url }
+  },
+
+  switchRole: (token: string) =>
+    api.post<{
+      success: boolean;
+      message: string;
+      data: { role: string; tokens: { accessToken: string; refreshToken: string } }
+    }>("/auth/switch-role", undefined, token),
+
+  acceptAdminInvite: (token: string, inviteToken: string) =>
+    api.post<{
+      success: boolean;
+      message: string;
+      data: { role: string; tokens: { accessToken: string; refreshToken: string } };
+    }>("/auth/accept-admin-invite", { inviteToken }, token),
+
+  deleteAccount: (token: string, action: 'deactivate' | 'delete' = 'delete') =>
+    api.delete<{ success: boolean; message: string }>("/auth/account", { action }, token),
+
+  profile: {
+    update(token: string, data: any) {
+      return authApi.updateProfile(token, data);
+    },
+    uploadMedia(token: string, file: File, type: 'avatar' | 'banner') {
+      return authApi.uploadProfileMedia(token, file, type);
+    },
+  },
+};
+
+
+/* =========================
+   USERS (GENERIC)
+========================= */
+
+export const usersApi = {
+  getReviews: (userId: string, token?: string, role?: 'buyer' | 'expert') => {
+    const query = role ? `?role=${role}` : '';
+    return api.get<{ success: boolean; data: any[] }>(`/profile/${userId}/reviews${query}`, token);
+  },
+};
+
+
+/* =========================
+   ADMIN
+========================= */
+
+export const adminApi = {
+  getStats: (token: string) =>
+    api.get<{ success: boolean; data: any }>('/admin/stats', token),
+
+  getUsers: (token: string, search?: string, role?: string, page: number = 1, limit: number = 50, sortBy: string = 'pending_first') => {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (role && role !== 'all') params.append('role', role);
+    params.append('page', page.toString());
+    params.append('limit', limit.toString());
+    params.append('sortBy', sortBy);
+    return api.get<{ success: boolean; data: { users: any[]; pagination: any } }>(`/admin/users?${params.toString()}`, token);
+  },
+
+  getUserById: (id: string, token: string) =>
+    api.get<{ success: boolean; data: any }>(`/admin/users/${id}`, token),
+
+  getUserProjects: (id: string, token: string) =>
+    api.get<{ success: boolean; data: any[] }>(`/admin/users/${id}/projects`, token),
+
+  getUserContracts: (id: string, token: string) =>
+    api.get<{ success: boolean; data: any[] }>(`/admin/users/${id}/contracts`, token),
+
+  getProfileContracts: (profileId: string, side: 'buyer' | 'expert', token: string) =>
+    api.get<{ success: boolean; data: any[] }>(`/admin/profiles/${profileId}/contracts?side=${side}`, token),
+
+  banUser: (id: string, reason: string, token: string) =>
+    api.put<{ success: boolean; message: string }>(`/admin/users/${id}/ban`, { reason }, token),
+
+  unbanUser: (id: string, token: string) =>
+    api.put<{ success: boolean; message: string }>(`/admin/users/${id}/unban`, {}, token),
+
+  verifyExpert: (id: string, token: string) =>
+    api.put<{ success: boolean; message: string }>(`/admin/users/${id}/verify`, {}, token),
+
+  updateExpertStatus: (
+    id: string,
+    data: { expert_status?: string; vetting_level?: string; tier_name?: string; tier_level?: number },
+    token: string
+  ) =>
+    api.put<{ success: boolean; message: string; data?: any }>(`/admin/users/${id}/expert-status`, data, token),
+
+  getProjects: (token: string) =>
+    api.get<{ success: boolean; data: any[] }>('/admin/projects', token),
+
+  approveProject: (id: string, token: string) =>
+    api.put<{ success: boolean; message: string }>(`/admin/projects/${id}/approve`, {}, token),
+
+  rejectProject: (id: string, token: string) =>
+    api.put<{ success: boolean; message: string }>(`/admin/projects/${id}/reject`, {}, token),
+
+  getContracts: (token: string) =>
+    api.get<{ success: boolean; data: any[] }>('/admin/contracts', token),
+
+  getDisputes: (token: string) =>
+    api.get<{ success: boolean; data: any[] }>('/admin/disputes', token),
+
+  resolveDispute: (id: string, decision: string, note: string | undefined, token: string) =>
+    api.post<{ success: boolean; message: string }>(`/admin/disputes/${id}/resolve`, { decision, note }, token),
+
+  closeDispute: (id: string, note: string | undefined, token: string) =>
+    api.post<{ success: boolean; message: string }>(`/admin/disputes/${id}/close`, { note }, token),
+
+  getReports: (token: string) =>
+    api.get<{ success: boolean; data: any[] }>('/admin/reports', token),
+
+  actionReport: (id: string, action: string, token: string) =>
+    api.post<{ success: boolean; message: string }>(`/admin/reports/${id}/action`, { action }, token),
+
+  dismissReport: (id: string, token: string) =>
+    api.put<{ success: boolean; message: string }>(`/admin/reports/${id}/dismiss`, {}, token),
+
+  getDocumentSignedUrl: (id: string, token: string) =>
+    api.get<{ success: boolean; data: { url: string } }>(`/admin/documents/${id}/signed-url`, token),
+
+  getPayouts: (token: string) =>
+    api.get<{ success: boolean; data: any[] }>('/admin/payouts', token),
+
+  getInvoices: (token: string, status?: string) => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    const qs = params.toString();
+    return api.get<{ success: boolean; data: any[] }>(`/admin/invoices${qs ? `?${qs}` : ''}`, token);
+  },
+
+  getEarningsAnalytics: (
+    token: string,
+    opts?: { limitCountries?: number; limitExperts?: number; limitDomains?: number; limitCountryUsers?: number }
+  ) => {
+    const params = new URLSearchParams();
+    if (opts?.limitCountries) params.append('limitCountries', String(opts.limitCountries));
+    if (opts?.limitExperts) params.append('limitExperts', String(opts.limitExperts));
+    if (opts?.limitDomains) params.append('limitDomains', String(opts.limitDomains));
+    if (opts?.limitCountryUsers) params.append('limitCountryUsers', String(opts.limitCountryUsers));
+    const qs = params.toString();
+    return api.get<{ success: boolean; data: any }>(`/admin/analytics/earnings${qs ? `?${qs}` : ''}`, token);
+  },
+
+  getCircumventionAnalytics: (
+    token: string,
+    opts?: { days?: number; limit?: number }
+  ) => {
+    const params = new URLSearchParams();
+    if (opts?.days) params.append('days', String(opts.days));
+    if (opts?.limit) params.append('limit', String(opts.limit));
+    const qs = params.toString();
+    return api.get<{ success: boolean; data: any }>(`/admin/analytics/circumvention${qs ? `?${qs}` : ''}`, token);
+  },
+
+  logCircumvention: (data: { chatId: string | null; detectedType: string; detectedValue: string; content: string }, token: string) =>
+    api.post<{ success: boolean; message: string }>('/chats/circumvention/log', data, token),
+
+  processPayout: (id: string, token: string) =>
+    api.post<{ success: boolean; message: string }>(`/admin/payouts/${id}/process`, {}, token),
+
+  inviteAdmin: (email: string, token: string) =>
+    api.post<{ success: boolean; message: string }>('/admin/invite', { email }, token),
+};
+
+/* =========================
+   REPORTS (USER FACING)
+========================= */
+
+export const reportsApi = {
+  create: (data: { reported_id: string; type: string; description: string; evidence?: any[] }, token: string) =>
+    api.post<{ success: boolean; message: string }>('/reports', data, token),
+
+  uploadEvidence: async (token: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE_URL}/reports/upload`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) throw new Error('Upload failed');
+    return res.json() as Promise<{ success: boolean; data: { url: string; path: string } }>;
+  },
+};
+
+/* =========================
+   DISPUTES (USER FACING)
+========================= */
+
+export const disputesApi = {
+  create: (data: { contract_id: string; reason: string; description: string; evidence?: any[] }, token: string) =>
+    api.post<{ success: boolean; message: string }>('/disputes', data, token),
+};
+
+
+/* =========================
+   CLIENTS (Formerly Buyers)
+========================= */
+
+export const clientsApi = {
+  getById: (id: string, token?: string) =>
+    api.get<{ data: any }>(`/buyers/${id}`, token),
+
+  getPublicStats: (id: string, token?: string) =>
+    api.get<{
+      success: boolean;
+      data: {
+        total_spent: number;
+        hire_rate: number;
+        jobs_posted_count: number;
+        avg_hourly_rate: number;
+        hours_billed: number;
+        member_since: string;
+      }
+    }>(`/buyers/${id}/stats`, token),
+
+  getDashboardStats: (id: string, token: string) =>
+    api.get<{
+      success: boolean;
+      data: {
+        totalSpent: number;
+        expertsHired: number;
+        completedProjects: number;
+      };
+    }>(`/buyers/${id}/dashboard-stats`, token),
+};
+
+/* =========================
+   EXPERTS
+========================= */
+
+export const expertsApi = {
+  getAll: (
+    token?: string,
+    filters?: {
+      domains?: string[];
+      rateMin?: number;
+      rateMax?: number;
+      onlyVerified?: boolean;
+      searchQuery?: string;
+    }
+  ) => {
+    const params = new URLSearchParams();
+    if (filters?.domains?.length) params.append("domain", filters.domains.join(","));
+    if (filters?.rateMin) params.append("rateMin", filters.rateMin.toString());
+    if (filters?.rateMax) params.append("rateMax", filters.rateMax.toString());
+    if (filters?.onlyVerified) params.append("onlyVerified", "true");
+    if (filters?.searchQuery) params.append("query", filters.searchQuery);
+
+    const query = params.toString() ? `?${params.toString()}` : "";
+    return api.get<{ data: any[] }>(`/experts${query}`, token);
+  },
+
+  getById: (id: string, token?: string) =>
+    api.get<{ data: any }>(`/experts/${id}`, token),
+
+  semanticSearch: (query: string, token?: string) =>
+    api.post<{ results: any[]; query: string; totalResults: number }>(
+      '/experts/semantic-search',
+      { query },
+      token
+    ),
+
+  updateById: (id: string, data: any, token: string) =>
+    api.patch<{ success: boolean; data: any }>(
+      `/experts/${id}`,
+      data,
+      token
+    ),
+
+  uploadDocument: async (token: string, formData: FormData) => {
+    const response = await fetch(`${API_BASE_URL}/experts/documents`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || "Failed to upload document");
+    }
+    return response.json();
+  },
+
+  getResumeSignedUrl: (token: string) =>
+    api.get<{ url: string }>('/experts/resume/signed-url', token),
+
+  deleteDocument: async (token: string, documentId: string) => {
+    const response = await fetch(
+      `${API_BASE_URL}/experts/documents/${documentId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message || 'Failed to delete document');
+    }
+
+    return response.json();
+  },
+
+  getDashboardStats: (id: string, token: string) =>
+    api.get<{
+      success: boolean;
+      data: {
+        totalEarnings: number;
+        totalEarningsINR?: number;
+        displayCurrency: string;
+        earningsChart: Array<{ name: string; value: number }>;
+        trendPercentage: number;
+      };
+    }>(`/experts/${id}/dashboard-stats`, token),
+};
+
+/* =========================
+   PROJECTS
+========================= */
+
+export const projectsApi = {
+  getAll: (token: string, status?: string) => {
+    const query = status ? `?status=${status}` : '';
+    return api.get<{ success: boolean; data: any[] }>(
+      `/projects${query}`,
+      token
+    );
+  },
+
+  getMarketplace: (
+    token: string,
+    filters?: { buyerId?: string }
+  ) => {
+    const params = new URLSearchParams();
+    if (filters?.buyerId) params.append('buyer_id', filters.buyerId);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return api.get<{ success: boolean; data: any[] }>(
+      `/projects/marketplace${query}`,
+      token
+    );
+  },
+
+  // --- NEW METHOD ADDED HERE ---
+  getRecommended: (expertId: string, token: string) =>
+    api.get<{ success: boolean; data: { results: any[]; totalResults: number } }>(
+      `/experts/${expertId}/recommended-projects`,
+      token
+    ),
+  // ----------------------------
+
+  getById: (id: string, token: string) =>
+    api.get<{ success: boolean; data: any }>(
+      `/projects/${id}`,
+      token
+    ),
+
+  create: (data: any, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      '/projects',
+      data,
+      token
+    ),
+
+  update: (id: string, data: any, token: string) =>
+    api.patch<{ success: boolean; data: any }>(
+      `/projects/${id}`,
+      data,
+      token
+    ),
+
+  delete: (id: string, token: string) =>
+    api.delete<{ success: boolean }>(
+      `/projects/${id}`,
+      undefined,
+      token
+    ),
+
+  getProposals: (projectId: string, token: string) =>
+    api.get<{ success: boolean; data: any[] }>(
+      `/proposals/project/${projectId}`,
+      token
+    ),
+
+  submitProposal: (projectId: string, data: any, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      '/proposals',
+      data,
+      token
+    ),
+
+  getExpertProposals: (token: string) =>
+    api.get<{ success: boolean; data: any[] }>(
+      '/proposals/expert/my-proposals',
+      token
+    ),
+};
+
+/* =========================
+   INVITATIONS (NEW)
+========================= */
+
+export const invitationsApi = {
+  send: (
+    projectId: string,
+    expertId: string,
+    message: string,
+    token: string,
+    engagement_model?: string,
+    payment_terms?: Record<string, any>
+  ) =>
+    api.post<{ success: boolean }>(
+      '/invitations',
+      {
+        project_id: projectId,
+        expert_profile_id: expertId,
+        message,
+        engagement_model,
+        payment_terms
+      },
+      token
+    ),
+
+  getMyInvitations: (token: string) =>
+    api.get<{ success: boolean; data: any[] }>('/invitations/me', token),
+
+  updateStatus: (id: string, status: 'accepted' | 'declined', token: string) =>
+    api.patch<{ success: boolean }>(`/invitations/${id}/status`, { status }, token),
+};
+
+/* =========================
+   CONTRACTS
+========================= */
+
+export const contractsApi = {
+  getAll: (token: string, status?: string) => {
+    const query = status ? `?status=${status}` : '';
+    return api.get<{ success: boolean; data: any[] }>(
+      `/contracts${query}`,
+      token
+    );
+  },
+
+  getById: (id: string, token: string) =>
+    api.get<{ success: boolean; data: any }>(
+      `/contracts/${id}`,
+      token
+    ),
+
+  getByProject: (projectId: string, token: string) =>
+    api.get<{ success: boolean; data: any[] }>(
+      `/contracts/project/${projectId}`,
+      token
+    ),
+
+  create: (data: any, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      '/contracts',
+      data,
+      token
+    ),
+
+  acceptAndSignNda: (
+    contractId: string,
+    signature_name: string,
+    token: string
+  ) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/accept-and-sign-nda`,
+      { signature_name },
+      token
+    ),
+
+  signContract: (contractId: string, signature_name: string, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/sign-contract`,
+      { signature_name },
+      token
+    ),
+
+  signNda: (contractId: string, signature_name: string, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/sign-nda`,
+      { signature_name },
+      token
+    ),
+
+  activate: (contractId: string, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/activate`,
+      {},
+      token
+    ),
+
+  updateNda: (
+    contractId: string,
+    nda_custom_content: string,
+    token: string,
+    nda_status: string = 'sent'
+  ) =>
+    api.patch<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/nda`,
+      { nda_custom_content, nda_status },
+      token
+    ),
+
+  decline: (contractId: string, token: string, reason?: string) =>
+    api.post<{
+      projectId: any;
+      success: boolean;
+      message: string;
+      data: { contractId: string; projectId: string };
+    }>(
+      `/contracts/${contractId}/decline`,
+      { reason },
+      token
+    ),
+
+  getInvoice: (invoiceId: string, token: string) =>
+    api.get<{ success: boolean; data: Invoice }>('/invoices/' + invoiceId, token),
+
+  payInvoice: (invoiceId: string, token: string) =>
+    api.patch<{ success: boolean; data: any }>('/invoices/' + invoiceId + '/pay', undefined, token),
+
+  getInvoices: (contractId: string, token: string) =>
+    api.get<{ success: boolean; data: any[] }>(
+      `/contracts/${contractId}/invoices`,
+      token
+    ),
+
+  fundEscrow: (contractId: string, amount: number, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/fund`,
+      { amount },
+      token
+    ),
+
+  finishSprint: (contractId: string, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/finish-sprint`,
+      undefined,
+      token
+    ),
+
+  complete: (contractId: string, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/complete`,
+      undefined,
+      token
+    ),
+
+  submitFeedback: (contractId: string, rating: number, comment: string, token: string) =>
+    api.post<{ success: boolean; data: any }>(
+      `/contracts/${contractId}/feedback`,
+      { rating, comment }, token),
+
+  getFeedback: (contractId: string, token: string) =>
+    api.get<{ success: boolean; data: any[] }>(
+      `/contracts/${contractId}/feedback`, token),
+};
+
+/* =========================
+   DAY WORK SUMMARIES + WORK LOGS
+========================= */
+
+export const dayWorkSummariesApi = {
+  create: async (contractId: string, data: any, token: string) => {
+    const attachments: File[] | undefined = Array.isArray(data?.attachments)
+      ? (data.attachments as File[])
+      : undefined;
+
+    if (attachments && attachments.length > 0) {
+      const form = new FormData();
+      form.append('contract_id', contractId);
+
+      if (data?.work_date) form.append('work_date', String(data.work_date));
+      if (data?.total_hours !== undefined) form.append('total_hours', String(data.total_hours));
+      if (data?.description) form.append('description', String(data.description));
+      if (data?.problems_faced) form.append('problems_faced', String(data.problems_faced));
+
+      if (data?.checklist) form.append('checklist', JSON.stringify(data.checklist));
+      if (data?.evidence) form.append('evidence', JSON.stringify(data.evidence));
+
+      for (const file of attachments.slice(0, 10)) {
+        form.append('attachments', file);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/day-work-summaries`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(err.message || err.error || 'Failed to create day work summary');
+      }
+
+      return response.json();
+    }
+
+    return api.post<{ success: boolean; data: DayWorkSummary }>(
+      '/day-work-summaries',
+      { ...data, contract_id: contractId },
+      token
+    );
+  },
+
+  getByContract: (contractId: string, token: string) =>
+    api.get<{ success: boolean; data: DayWorkSummary[] }>(
+      `/day-work-summaries/contract/${contractId}`,
+      token
+    ),
+
+  approveOrReject: (
+    summaryId: string,
+    status: 'approved' | 'rejected',
+    reviewer_comment: string | undefined,
+    token: string
+  ) =>
+    api.patch<{ success: boolean; data: any }>(
+      `/day-work-summaries/${summaryId}/status`,
+      { status, reviewer_comment },
+      token
+    ),
+};
+
+export const workLogsApi = {
+  create: async (contractId: string, data: any, token: string) => {
+    const attachments: File[] | undefined = Array.isArray(data?.attachments)
+      ? (data.attachments as File[])
+      : undefined;
+
+    if (attachments && attachments.length > 0) {
+      const form = new FormData();
+      form.append('contract_id', contractId);
+
+      // Primitive fields
+      if (data?.type) form.append('type', String(data.type));
+      if (data?.description) form.append('description', String(data.description));
+      if (data?.problems_faced) form.append('problems_faced', String(data.problems_faced));
+      if (data?.log_date) form.append('log_date', String(data.log_date));
+
+      // JSON fields
+      if (data?.checklist) form.append('checklist', JSON.stringify(data.checklist));
+      if (data?.evidence) form.append('evidence', JSON.stringify(data.evidence));
+
+      for (const file of attachments.slice(0, 10)) {
+        form.append('attachments', file);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/work-logs`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(err.message || err.error || 'Failed to create work log');
+      }
+
+      return response.json();
+    }
+
+    // Default JSON path (no attachments)
+    return api.post('/work-logs', { ...data, contract_id: contractId }, token);
+  },
+
+  update: async (workLogId: string, data: any, token: string) => {
+    const attachments: File[] | undefined = Array.isArray(data?.attachments)
+      ? (data.attachments as File[])
+      : undefined;
+
+    if (attachments && attachments.length > 0) {
+      const form = new FormData();
+
+      // Primitive fields
+      if (data?.description) form.append('description', String(data.description));
+      if (data?.problems_faced) form.append('problems_faced', String(data.problems_faced));
+      if (data?.log_date) form.append('log_date', String(data.log_date));
+
+      // JSON fields
+      if (data?.checklist) form.append('checklist', JSON.stringify(data.checklist));
+      if (data?.evidence) form.append('evidence', JSON.stringify(data.evidence));
+      if (data?.evidence_summary) form.append('evidence_summary', String(data.evidence_summary));
+
+      for (const file of attachments.slice(0, 10)) {
+        form.append('attachments', file);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/work-logs/${workLogId}/edit`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(err.message || err.error || 'Failed to update work log');
+      }
+
+      return response.json();
+    }
+
+    return api.patch(`/work-logs/${workLogId}/edit`, data, token);
+  },
+
+  getByContract: (contractId: string, token: string) =>
+    api.get(`/work-logs/contract/${contractId}`, token),
+
+  approve: (workLogId: string, token: string) =>
+    api.patch(`/work-logs/${workLogId}`, { status: 'approved' }, token),
+
+  reject: (workLogId: string, reason: string, token: string) =>
+    api.patch(
+      `/work-logs/${workLogId}`,
+      { status: 'rejected', buyer_comment: reason },
+      token
+    ),
+};
+
+/* =========================
+   MESSAGES
+========================= */
+
+export const messagesApi = {
+  // Get all chats for current user
+  getChats: (token: string) => api.get<any[]>("/chats", token),
+
+  // Start or fetch direct chat with a user
+  // Start or fetch direct chat with a user
+  startDirectChat: (participantId: string, token: string, participantRole?: string) =>
+    api.post<{ id: string; type: string; createdAt: string; members: any[] }>(
+      "/chats/start",
+      { participantId, participantRole },
+      token
+    ),
+
+  // Get chat details with all members
+  getChatDetails: (chatId: string, token: string) =>
+    api.get<{ id: string; type: string; members: any[] }>(
+      `/chats/${chatId}`,
+      token
+    ),
+
+  // Get all messages in a chat
+  getMessages: (chatId: string, token: string) =>
+    api.get<any[]>(`/chats/${chatId}/messages`, token),
+
+  // Send message to chat
+  sendMessage: (chatId: string, content: string, token: string) =>
+    api.post<{
+      id: string;
+      chatId: string;
+      senderId: string;
+      content: string;
+      createdAt: string;
+    }>(`/chats/${chatId}/messages`, { content }, token),
+
+  // Add user to chat
+  addChatMember: (chatId: string, userId: string, token: string) =>
+    api.post<{ message: string; userId: string; chatId: string }>(
+      `/chats/${chatId}/members`,
+      { userId },
+      token
+    ),
+
+  // Remove user from chat
+  removeChatMember: (chatId: string, userId: string, token: string) =>
+    api.delete<{ message: string; userId: string; chatId: string }>(
+      `/chats/${chatId}/members`,
+      { userId },
+      token
+    ),
+
+  // Delete chat
+  deleteChat: (chatId: string, token: string) =>
+    api.delete<{ message: string; chatId: string }>(`/chats/${chatId}`, undefined, token),
+
+  // Upload file attachment
+  uploadAttachment: async (
+    chatId: string,
+    formData: FormData,
+    token: string
+  ) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL
+      }/chats/${chatId}/attachments`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to upload attachment");
+    }
+    return response.json();
+  },
+
+  // Download attachment
+  downloadAttachment: (attachmentId, token) =>
+    api.download(`/attachments/${attachmentId}`, token),
+
+  // Delete attachment
+  deleteAttachment: (attachmentId: string, token: string) =>
+    api.delete<{ message: string; attachmentId: string }>(
+      `/attachments/${attachmentId}`,
+      undefined,
+      token
+    ),
+
+  // Upload voice message
+  uploadVoice: async (
+    chatId: string,
+    file: File,
+    token: string
+  ) => {
+
+    const moderationForm = new FormData();
+    moderationForm.append("file", file);
+
+    const moderationRes = await fetch(
+      "https://api.asteai.com/voice-memo",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        body: moderationForm,
+      }
+    );
+
+    let moderationPayload: any;
+    try {
+      moderationPayload = await moderationRes.json();
+    } catch {
+      console.error("VOICE MODERATION: invalid JSON", {
+        status: moderationRes.status,
+      });
+      throw new Error("Invalid moderation response");
+    }
+
+    if (moderationRes.status !== 200 && moderationRes.status !== 422) {
+      console.error("VOICE MODERATION HARD FAILURE:", {
+        status: moderationRes.status,
+        payload: moderationPayload,
+      });
+      throw new Error("Voice moderation failed");
+    }
+
+    console.debug("VOICE MODERATION RESULT:", {
+      httpStatus: moderationRes.status,
+      status: moderationPayload.status,
+      transcript: moderationPayload.transcript,
+      reasons: moderationPayload.reason,
+      fileMeta: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+      },
+    });
+
+    if (moderationPayload.status === "rejected") {
+      return {
+        status: "rejected" as const,
+        transcript: moderationPayload.transcript ?? "",
+        moderation: fromVoiceMemoRejection(moderationPayload.reason ?? []),
+      };
+    }
+
+    const transcript = moderationPayload.transcript ?? "";
+
+    const uploadForm = new FormData();
+    uploadForm.append("file", file);
+
+    const uploadRes = await fetch(
+      `${import.meta.env.VITE_API_URL}/chats/${chatId}/voice`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: uploadForm,
+      }
+    );
+
+    if (!uploadRes.ok) {
+      const err = await uploadRes
+        .json()
+        .catch(() => ({ message: "Failed to upload voice message" }));
+      throw new Error(
+        err.message || err.error || "Failed to upload voice message"
+      );
+    }
+
+    const uploadData = await uploadRes.json() as {
+      stored_file: string;
+    };
+
+    console.debug("VOICE MESSAGE ACCEPTED & UPLOADED:", {
+      stored_file: uploadData.stored_file,
+      transcript,
+    });
+
+    return {
+      status: "accepted" as const,
+      stored_file: uploadData.stored_file,
+      transcript,
+      moderation: {
+        isAllowed: true,
+        violations: [],
+        cleanContent: transcript,
+        flaggedIndices: [],
+      },
+    };
+  },
+
+};
+
+/* =========================
+   SCORING & RANKING
+========================= */
+
+export interface UserScoreResponse {
+  success?: boolean;
+  data: {
+    user_id: string;
+    expertise_score: number;
+    performance_score: number;
+    reliability_score: number;
+    quality_score: number;
+    engagement_score: number;
+    overall_score: number;
+    last_calculated_at?: string;
+  };
+}
+
+export interface RankTierResponse {
+  success?: boolean;
+  data: {
+    user_id: string;
+    tier_name: string;
+    tier_level: number;
+    achieved_at?: string;
+    previous_tier?: string | null;
+    badge_icon?: string | null;
+    tier_description?: string | null;
+    top_percentile?: number;
+    rank_position?: number | null;
+    total_experts?: number;
+  };
+}
+
+export interface UserTagResponse {
+  success?: boolean;
+  data: Array<{
+    id: string;
+    user_id: string;
+    tag_name: string;
+    tag_category: string;
+    tag_icon?: string | null;
+    description?: string | null;
+    score_contribution?: number;
+    awarded_at?: string;
+    expires_at?: string | null;
+    display_priority?: number;
+    is_verified_badge?: boolean;
+  }>;
+}
+
+export interface LeaderboardEntry {
+  user_id: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  avatar_url?: string | null;
+  overall_score: number;
+  tier_name?: string;
+  tier_level?: number;
+  total_earned?: number;
+  invoices_paid?: number;
+  contracts_completed?: number;
+}
+
+export const scoringApi = {
+  getUserScore: (userId: string, token?: string) =>
+    api.get<UserScoreResponse>(`/scoring/user/${userId}`, token),
+
+  getUserRank: (userId: string, token?: string) =>
+    api.get<RankTierResponse>(`/ranking/user/${userId}`, token),
+
+  getUserTags: (userId: string, token?: string) =>
+    api.get<UserTagResponse>(`/tags/user/${userId}`, token),
+
+  getLeaderboard: (
+    token?: string,
+    params?: { limit?: number; role?: "expert" | "buyer"; sortBy?: "score" | "earnings" }
+  ) => {
+    const search = new URLSearchParams();
+    if (params?.limit) search.append("limit", String(params.limit));
+    if (params?.role) search.append("role", params.role);
+    if (params?.sortBy) search.append("sortBy", params.sortBy);
+    const q = search.toString() ? `?${search.toString()}` : "";
+    return api.get<{ success?: boolean; data: LeaderboardEntry[] }>(
+      `/scoring/leaderboard${q}`,
+      token
+    );
+  },
+};
+
+/* =========================
+   AI EVALUATION (ADMIN)
+========================= */
+
+export const adminAiApi = {
+  getExpertAiEvaluation: (userId: string, token: string) =>
+    api.get<{
+      success: boolean;
+      data: {
+        parsed_data: any;
+        scores: {
+          overall_score: number;
+          quality_score: number;
+          expertise_score: number;
+          engagement_score: number;
+          performance_score: number;
+          reliability_score: number;
+        };
+        admin_recommendation: {
+          decision: string;
+          justification: string;
+          areas_for_growth: string[];
+          best_fit_projects: string[];
+          recommended_roles: string[];
+        };
+        llm_status: string;
+        created_at: string;
+      } | null;
+    }>(`/admin/users/${userId}/ai-evaluation`, token),
+};
+export const timeEntriesApi = {
+  create: async (data: any, token: string) => {
+    const attachments: File[] | undefined = Array.isArray(data?.attachments)
+      ? (data.attachments as File[])
+      : undefined;
+
+    if (attachments && attachments.length > 0) {
+      const form = new FormData();
+
+      if (data?.contract_id) form.append('contract_id', String(data.contract_id));
+      if (data?.description) form.append('description', String(data.description));
+      if (data?.start_time) form.append('start_time', String(data.start_time));
+      if (data?.end_time) form.append('end_time', String(data.end_time));
+      if (data?.duration_minutes !== undefined) form.append('duration_minutes', String(data.duration_minutes));
+      if (data?.evidence) form.append('evidence', JSON.stringify(data.evidence));
+
+      for (const file of attachments.slice(0, 10)) {
+        form.append('attachments', file);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/time-entries`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: response.statusText }));
+        const e: any = new Error(err.message || err.error || 'Failed to create time entry');
+        if (err?.code) e.code = err.code;
+        e.status = response.status;
+        throw e;
+      }
+
+      return response.json();
+    }
+
+    return api.post('/time-entries', data, token);
+  },
+  getByContract: (contractId: string, token: string) => api.get(`/time-entries/contract/${contractId}`, token),
+  getSummary: (contractId: string, token: string) => api.get(`/time-entries/contract/${contractId}/summary`, token),
+  update: async (id: string, data: any, token: string) => {
+    const attachments: File[] | undefined = Array.isArray(data?.attachments)
+      ? (data.attachments as File[])
+      : undefined;
+
+    if (attachments && attachments.length > 0) {
+      const form = new FormData();
+
+      if (data?.description) form.append('description', String(data.description));
+      if (data?.start_time) form.append('start_time', String(data.start_time));
+      if (data?.end_time) form.append('end_time', String(data.end_time));
+      if (data?.duration_minutes !== undefined) form.append('duration_minutes', String(data.duration_minutes));
+      if (data?.evidence) form.append('evidence', JSON.stringify(data.evidence));
+
+      for (const file of attachments.slice(0, 10)) {
+        form.append('attachments', file);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/time-entries/${id}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: response.statusText }));
+        const e: any = new Error(err.message || err.error || 'Failed to update time entry');
+        if (err?.code) e.code = err.code;
+        e.status = response.status;
+        throw e;
+      }
+
+      return response.json();
+    }
+
+    return api.patch(`/time-entries/${id}`, data, token);
+  },
+  submit: (id: string, token: string) => api.post(`/time-entries/${id}/submit`, {}, token),
+  approve: (id: string, comment: string, token: string) => api.post(`/time-entries/${id}/approve`, { comment }, token),
+  reject: (id: string, comment: string, token: string) => api.post(`/time-entries/${id}/reject`, { comment }, token),
+  delete: (id: string, token: string) => api.delete(`/time-entries/${id}`, undefined, token),
+};
+
+/* =========================
+   HELP DESK
+========================= */
+
+export const helpDeskApi = {
+  create: async (data: any, token: string) => {
+    const attachments: File[] | undefined = Array.isArray(data?.attachments)
+      ? (data.attachments as File[])
+      : undefined;
+
+    if (attachments && attachments.length > 0) {
+      const form = new FormData();
+
+      if (data?.type) form.append('type', String(data.type));
+      if (data?.subject) form.append('subject', String(data.subject));
+      if (data?.description) form.append('description', String(data.description));
+      if (data?.priority) form.append('priority', String(data.priority));
+
+      for (const file of attachments.slice(0, 10)) {
+        form.append('attachments', file);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/help-desk`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: form,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(err.message || err.error || 'Failed to create ticket');
+      }
+
+      return response.json();
+    }
+
+    return api.post('/help-desk', data, token);
+  },
+
+  getMyTickets: (token: string) => api.get<any>('/help-desk/my-tickets', token),
+};
+
+/* =========================
+   CURRENCY
+========================= */
+
+export const currencyApi = {
+  getPreferred: (token: string) =>
+    api.get<{
+      success: boolean;
+      data: { currency: string; supported: string[] };
+    }>('/currency/preferred', token),
+
+  setPreferred: (currency: string, token: string) =>
+    api.put<{ success: boolean; data: { currency: string } }>(
+      '/currency/preferred',
+      { currency },
+      token
+    ),
+
+  getRates: () =>
+    api.get<{
+      success: boolean;
+      data: {
+        baseCurrency: string;
+        rates: Record<string, number>;
+        lastUpdated: string | null;
+      };
+    }>('/currency/rates'),
+};
+
+export const notificationApi = {
+  getForProfile: (profileId: string, token: string) =>
+    api.get<any>(`/notifications?profileId=${profileId}`, token),
+};
