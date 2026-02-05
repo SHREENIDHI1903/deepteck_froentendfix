@@ -218,17 +218,73 @@ export default function LandingPage() {
   ];
 
   const categoryImages: Record<string, string> = {
-    // Tech
-    ai_ml: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&auto=format&fit=crop&q=60",
-    robotics: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&auto=format&fit=crop&q=60",
-    biotech: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=600&auto=format&fit=crop&q=60",
-    quantum: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&auto=format&fit=crop&q=60",
-    cybersecurity: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=60",
-    space_tech: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=60",
-    blockchain: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&auto=format&fit=crop&q=60",
+    // Technology & Development
+    ai_ml: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&auto=format&fit=crop&q=60", // Abstract AI brains
+    data_science: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=60", // Data visualization
+    web_development: "https://images.unsplash.com/photo-1547658719-da2b51169166?w=600&auto=format&fit=crop&q=60", // Code on screen
+    mobile_development: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&auto=format&fit=crop&q=60", // Mobile phone
+    software_engineering: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=600&auto=format&fit=crop&q=60", // Server/Tech
+    // Actually let's use a specific distinct one for Cloud
+    devops_cloud: "https://images.unsplash.com/photo-1544197150-b99a580bbcbf?w=600&auto=format&fit=crop&q=60", // Abstract Server/Cloud
+    cybersecurity: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=60", // Cyber lock
+    blockchain: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&auto=format&fit=crop&q=60", // Blockchain nodes
+    game_development: "https://images.unsplash.com/photo-1556438082-1c724ee6e24f?w=600&auto=format&fit=crop&q=60", // 3D Modeling/Game Engine Interface
+    ar_vr: "https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=600&auto=format&fit=crop&q=60", // VR Headset
+    iot: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=60", // Circuit/IoT
 
-    // Default fallback
-    default: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=60"
+    // Deep Tech
+    robotics: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&auto=format&fit=crop&q=60", // Robot arm
+    biotech: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=600&auto=format&fit=crop&q=60", // DNA/Lab
+    quantum: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&auto=format&fit=crop&q=60", // Quantum physics
+    space_tech: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=60", // Earth from space
+    climate_tech: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&auto=format&fit=crop&q=60", // Nature/Wind
+    energy: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&auto=format&fit=crop&q=60", // Solar panels
+    advanced_materials: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&auto=format&fit=crop&q=60", // Microstructure
+    deep_infrastructure: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=60", // Skyscrapers/Grid/Infrastructure
+
+    // Design & Creative
+    ui_ux_design: "https://images.unsplash.com/photo-1545235617-9465d2a55698?w=600&auto=format&fit=crop&q=60", // Dark iPhone/App mockups
+    graphic_design: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60", // Abstract dreamy oil colors (Dark)
+    product_design: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=60", // Retro tech/Gadgets (Darker)
+    brand_identity: "https://images.unsplash.com/photo-1634942537034-2531766767d1?w=600&auto=format&fit=crop&q=60", // Neon/Dark branding signs
+    motion_graphics: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=60", // Cyberpunk city/motion
+    illustration: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=60", // Colorful dark art
+    video_production: "https://images.unsplash.com/photo-1601506521793-dc748fc80b67?w=600&auto=format&fit=crop&q=60", // Cinema Camera Rig (Distinct from photography)
+    photography: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=60", // Camera lens/Dark studio 
+
+    // Marketing & Sales
+    digital_marketing: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=60", // Dark Data Dashboard
+    content_marketing: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&auto=format&fit=crop&q=60", // Dark mood writing
+    seo: "https://images.unsplash.com/photo-1571786256017-aee7a0c009b6?w=600&auto=format&fit=crop&q=60", // Search magnifying glass
+    social_media: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=600&auto=format&fit=crop&q=60", // Phone apps (Darker)
+    email_marketing: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=600&auto=format&fit=crop&q=60", // Email/Newsletter
+    sales_strategy: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&auto=format&fit=crop&q=60", // Handshake/Deal
+    market_research: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=60", // Research/Data
+
+    // Business & Operations
+    business_consulting: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=60", // Professional suit/dark
+    financial_consulting: "https://images.unsplash.com/photo-1611974765270-ca1258634369?w=600&auto=format&fit=crop&q=60", // Finance graph
+    accounting: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=60", // Calculator/Ledger
+    legal_consulting: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600&auto=format&fit=crop&q=60", // Gavel (Darker)
+    hr_recruiting: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&auto=format&fit=crop&q=60", // Team meeting (Darker info)
+    project_management: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&auto=format&fit=crop&q=60", // Kanban board
+    product_management: "https://images.unsplash.com/photo-1531297461136-82lw8fca33f3?w=600&auto=format&fit=crop&q=60", // Product roadmap
+    operations: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=600&auto=format&fit=crop&q=60", // Logistics/Warehouse
+
+    // Writing & Translation
+    content_writing: "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=600&auto=format&fit=crop&q=60", // Dark journaling
+    copywriting: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&auto=format&fit=crop&q=60", // Typewriter
+    technical_writing: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=600&auto=format&fit=crop&q=60", // Coding close up
+    translation: "https://images.unsplash.com/photo-1543165796-5426273eaab3?w=600&auto=format&fit=crop&q=60", // Books library (Dark)
+    editing_proofreading: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&auto=format&fit=crop&q=60", // Red pen/Correction
+
+    // Support & Other
+    customer_support: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=600&auto=format&fit=crop&q=60", // Headset style
+    virtual_assistant: "https://images.unsplash.com/photo-1526328828355-69b01701ca6a?w=600&auto=format&fit=crop&q=60", // Home office
+    other: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=60", // Abstract mesh
+
+    // Fallback
+    default: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=60" // Generic tech
   };
 
 
