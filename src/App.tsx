@@ -54,6 +54,7 @@ import HowItWorks from "./pages/HowItWorks";
 import NotFound from "./pages/NotFound";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { HelpDeskWidget } from "@/components/support/HelpDeskWidget";
+import { SmoothScroll } from "@/components/layout/SmoothScroll";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SmoothScroll />
       <ScrollToTop />
       <AuthProvider>
         <TooltipProvider>
