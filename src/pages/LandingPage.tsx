@@ -189,17 +189,19 @@ export default function LandingPage() {
               animate="visible"
             >
               <motion.div variants={itemVariants} className="inline-block mb-6">
-                <Badge variant="secondary" className="px-4 py-2 text-sm font-medium bg-slate-100 text-slate-800 rounded-full border border-slate-200 shadow-sm">
-                  <Sparkles className="w-4 h-4 mr-2 text-indigo-600 inline" />
-                  World’s First Vernacular DeepTech Marketplace
+                <Badge variant="secondary" className="px-4 py-2 text-sm font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100 shadow-sm">
+                  <Zap className="w-4 h-4 mr-2 text-indigo-600 inline fill-indigo-100" />
+                  Launch Special: Free subscriptions for all users for first 3 months!
                 </Badge>
               </motion.div>
 
               <motion.h1
                 variants={itemVariants}
-                className="text-5xl lg:text-7xl font-black text-slate-900 leading-[1.15] mb-6 tracking-tight"
+                className="text-5xl lg:text-6xl font-black text-slate-900 leading-[1.15] mb-6 tracking-tight"
               >
-                ASTEAI
+                ASTEAI - World’s First <br className="hidden lg:block" />
+                Vernacular DeepTech <br className="hidden lg:block" />
+                Marketplace!
               </motion.h1>
 
               <motion.div variants={itemVariants} className="mb-8 font-mono text-lg sm:text-xl font-bold tracking-wide">
@@ -270,6 +272,68 @@ export default function LandingPage() {
         </div>
       </section>
 
+
+      {/* 
+        ========================================
+        WHY CHOOSE US (Serious Engineering)
+        ========================================
+      */}
+      <section className="py-24 bg-slate-950 text-white overflow-hidden relative">
+        {/* Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6 tracking-tight">Built for Serious Engineering</h2>
+            <p className="text-lg text-slate-400 leading-relaxed">
+              Generic platforms fail at deep-tech. We built a system specifically for R&D,
+              hardware-software co-design, and scientific commercialization.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "Verified Deep-Tech Experts",
+                desc: "Every expert is vetted for domain expertise, system-level experience, and a proven deep-tech track record."
+              },
+              {
+                icon: FileCheck, // Using FileCheck for "Built-in IP Protection" as generic Check might be too simple
+                title: "Built-in IP Protection",
+                desc: "Auto-generated NDAs, IP ownership declarations, and versioned agreement records protect your innovations."
+              },
+              {
+                icon: BrainCircuit, // Using BrainCircuit as placeholder for "Problem-First Matching"
+                title: "Problem-First Matching",
+                desc: "Describe your challenge and get matched with experts who have solved similar frontier technology problems."
+              },
+              {
+                icon: TrendingUp, // Using TrendingUp for "Milestone Tracking"
+                title: "Milestone Tracking",
+                desc: "Escrow-backed payments released only when specific technical milestones are met and verified."
+              }
+            ].map((feature, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+              >
+                <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-6 border border-slate-700">
+                  <feature.icon className="text-white w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  {feature.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* 
         ========================================
@@ -345,6 +409,13 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* 
+        ========================================
+        WHY CHOOSE US (Serious Engineering)
+        ========================================
+      */}
+
 
       {/* 
         ========================================
