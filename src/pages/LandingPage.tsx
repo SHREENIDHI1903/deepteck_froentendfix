@@ -226,6 +226,8 @@ export default function LandingPage() {
     software_engineering: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=600&auto=format&fit=crop&q=60", // Server/Tech
     // Actually let's use a specific distinct one for Cloud
     devops_cloud: "https://images.unsplash.com/photo-1544197150-b99a580bbcbf?w=600&auto=format&fit=crop&q=60", // Abstract Server/Cloud
+    database_administration: "https://images.unsplash.com/photo-1558494949-efc02570fbc9?w=600&auto=format&fit=crop&q=60", // Servers/Datacenter (Distinct)
+    qa_testing: "https://images.unsplash.com/photo-1516110833967-0b5716ca1387?w=600&auto=format&fit=crop&q=60", // User testing/AI analysis
     cybersecurity: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=60", // Cyber lock
     blockchain: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&auto=format&fit=crop&q=60", // Blockchain nodes
     game_development: "https://images.unsplash.com/photo-1556438082-1c724ee6e24f?w=600&auto=format&fit=crop&q=60", // 3D Modeling/Game Engine Interface
