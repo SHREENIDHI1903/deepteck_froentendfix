@@ -269,7 +269,7 @@ export default function LandingPage() {
     legal_consulting: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600&auto=format&fit=crop&q=60", // Gavel (Darker)
     hr_recruiting: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&auto=format&fit=crop&q=60", // Team meeting (Darker info)
     project_management: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&auto=format&fit=crop&q=60", // Kanban board
-    product_management: "https://images.unsplash.com/photo-1531297461136-82lw8fca33f3?w=600&auto=format&fit=crop&q=60", // Product roadmap
+    product_management: "https://images.unsplash.com/photo-1553877607-402a4664c39c?w=600&auto=format&fit=crop&q=60", // Dark Strategic Planning/Complexity
     operations: "https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=600&auto=format&fit=crop&q=60", // Logistics/Warehouse
 
     // Writing & Translation
