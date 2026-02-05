@@ -128,6 +128,17 @@ export default function LandingPage() {
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
 
   // Preload images to prevent flashing
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     const imageUrls = [
       "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop&q=60",
@@ -183,7 +194,7 @@ export default function LandingPage() {
             "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=60"  // Blockchain
           ][currentHeroImage]}
           alt="DeepTech Innovation"
-          className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl border-4 border-white/10 backdrop-blur-sm"
+          className={`absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl border-4 border-white/10 ${isMobile ? '' : 'backdrop-blur-sm'}`}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1.05 }}
@@ -193,9 +204,9 @@ export default function LandingPage() {
 
       {/* Floating Badge overlay */}
       <motion.div
-        animate={{ y: [0, -10, 0] }}
+        animate={isMobile ? {} : { y: [0, -10, 0] }} // Static on mobile
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -bottom-4 -right-2 lg:-bottom-6 lg:-right-6 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-xl flex items-center gap-2 z-20"
+        className={`absolute -bottom-4 -right-2 lg:-bottom-6 lg:-right-6 bg-white/90 px-4 py-2 rounded-xl shadow-xl flex items-center gap-2 z-20 ${isMobile ? '' : 'backdrop-blur'}`}
       >
         <span className="text-2xl">
           {["🤖", "🧠", "🧬", "⚛️", "🛡️", "🚀", "🔗"][currentHeroImage]}
@@ -250,16 +261,7 @@ export default function LandingPage() {
     { label: "Satisfaction Rate", value: "99%" },
   ];
 
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia("(max-width: 768px)").matches || 'ontouchstart' in window);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   return (
     <Layout>

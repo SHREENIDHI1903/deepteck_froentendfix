@@ -40,10 +40,14 @@ export function HeroBackground() {
             {/* 
         1. Animated Gradient Orbs 
         These move slowly and morph to create a "living" background feel.
-        Optimized for mobile: Active movement but with reduced blur (40px vs 100px) for performance.
+        Optimized for mobile: Active movement but with reduced blur (40px vs 100px) and NO scale changes.
       */}
             <motion.div
-                animate={{
+                animate={isMobile ? {
+                    opacity: [0.3, 0.5, 0.3],
+                    x: [0, 50, 0], // Reduced movement range
+                    y: [0, -30, 0],
+                } : {
                     scale: [1, 1.2, 1],
                     opacity: [0.3, 0.5, 0.3],
                     x: [0, 100, 0],
@@ -53,7 +57,11 @@ export function HeroBackground() {
                 className={`absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-300/30 rounded-full ${isMobile ? 'blur-[40px] opacity-40' : 'blur-[100px]'}`}
             />
             <motion.div
-                animate={{
+                animate={isMobile ? {
+                    opacity: [0.3, 0.6, 0.3],
+                    x: [0, -50, 0],
+                    y: [0, 30, 0],
+                } : {
                     scale: [1, 1.1, 1],
                     opacity: [0.3, 0.6, 0.3],
                     x: [0, -100, 0],
@@ -63,7 +71,10 @@ export function HeroBackground() {
                 className={`absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-blue-300/30 rounded-full ${isMobile ? 'blur-[40px] opacity-40' : 'blur-[100px]'}`}
             />
             <motion.div
-                animate={{
+                animate={isMobile ? {
+                    x: [0, 30, 0],
+                    y: [0, 50, 0],
+                } : {
                     scale: [1, 1.3, 1],
                     x: [0, 50, 0],
                     y: [0, 100, 0],
