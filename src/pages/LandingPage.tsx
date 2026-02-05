@@ -194,14 +194,14 @@ export default function LandingPage() {
           {[BrainCircuit, FileCheck, Rocket, Zap, Globe, Cpu, Dna, Database, ShieldCheck, Microscope].map((Icon, i) => (
             <motion.div
               key={i}
-              className="absolute text-indigo-500/20"
+              className="absolute text-indigo-600/40"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
               }}
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{
-                opacity: [0, 0.6, 0],
+                opacity: [0.1, 1, 0.1],
                 scale: [0.5, 1.5, 0.5],
                 y: [0, Math.random() * -100 - 50] // Float upwards
               }}
