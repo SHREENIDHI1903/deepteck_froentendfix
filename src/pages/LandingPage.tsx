@@ -188,10 +188,26 @@ export default function LandingPage() {
               initial="hidden"
               animate="visible"
             >
-              <motion.div variants={itemVariants} className="inline-block mb-6">
-                <Badge variant="secondary" className="px-4 py-2 text-sm font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100 shadow-sm">
-                  <Zap className="w-4 h-4 mr-2 text-indigo-600 inline fill-indigo-100" />
+              <motion.div variants={itemVariants} className="inline-block mb-6 relative group">
+                {/* Backdrop Glow */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur opacity-20 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animation-tilt" />
+
+                <Badge variant="secondary" className="relative px-4 py-2 text-sm font-medium bg-white text-indigo-900 rounded-full border border-indigo-100 shadow-[0_0_20px_rgba(99,102,241,0.2)] overflow-hidden">
+                  <motion.span
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="inline-block"
+                  >
+                    <Zap className="w-4 h-4 mr-2 text-indigo-600 inline fill-indigo-100" />
+                  </motion.span>
                   Launch Special: Free subscriptions for all users for first 3 months!
+
+                  {/* Holographic Sheen Effect */}
+                  <motion.div
+                    className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-indigo-400/10 to-transparent skew-x-12"
+                    animate={{ translateX: ["-150%", "150%"] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                  />
                 </Badge>
               </motion.div>
 
@@ -221,25 +237,41 @@ export default function LandingPage() {
               </motion.p>
 
               <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <motion.div whileHover={bounceHover} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <Button
                     size="xl"
-                    className="h-14 px-8 text-lg font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
-                    onClick={() => navigate(isAuthenticated ? "/experts" : "/register")}
+                    className="group relative h-14 px-8 text-lg font-bold rounded-xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all bg-indigo-600 hover:bg-indigo-700 text-white overflow-hidden"
+                    onClick={() => navigate("/register")}
                   >
-                    Hire Experts
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <span className="relative z-10 flex items-center">
+                      Start Building Now
+                      <motion.span
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 1 }}
+                        className="ml-2"
+                      >
+                        <ArrowRight className="h-5 w-5" />
+                      </motion.span>
+                    </span>
+                    {/* Shimmer Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
                   </Button>
                 </motion.div>
 
-                <motion.div whileHover={bounceHover} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <Button
                     size="xl"
                     variant="outline"
-                    className="h-14 px-8 text-lg font-bold rounded-xl border-2 hover:bg-slate-50 text-slate-700"
-                    onClick={() => navigate("/register?role=expert")}
+                    className="group h-14 px-8 text-lg font-bold rounded-xl border-2 hover:bg-slate-50 text-slate-700 transition-colors"
+                    onClick={() => navigate("/howitworks")}
                   >
-                    Apply as Expert
+                    How It Works
                   </Button>
                 </motion.div>
               </motion.div>
@@ -278,18 +310,68 @@ export default function LandingPage() {
         WHY CHOOSE US (Serious Engineering)
         ========================================
       */}
-      <section className="py-24 bg-slate-950 text-white overflow-hidden relative">
+      <section id="serious-engineering" className="py-24 bg-slate-950 text-white overflow-hidden relative">
         {/* Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
+        {/* Animated Cyber Grid */}
+        <div className="absolute inset-0 z-0 opacity-30">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
+          {/* Moving Data Beams (Horizontal) */}
+          <motion.div
+            animate={{ backgroundPosition: ["0% 0%", "100% 0%"] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(99,102,241,0.5),transparent)] bg-[length:50%_100%] opacity-20"
+            style={{ backgroundSize: "200% 100%" }}
+          />
+
+          {/* Random "Glitch" Squares */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute bg-indigo-500/20 backdrop-blur-sm border border-indigo-500/30"
+              style={{
+                width: Math.random() * 100 + 50,
+                height: Math.random() * 100 + 50,
+                left: `${Math.random() * 80 + 10}%`,
+                top: `${Math.random() * 80 + 10}%`,
+              }}
+              animate={{
+                opacity: [0, 0.4, 0],
+                scale: [0.8, 1, 0.8],
+                x: [0, Math.random() * 50 - 25, 0],
+                y: [0, Math.random() * 50 - 25, 0]
+              }}
+              transition={{
+                duration: Math.random() * 5 + 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: Math.random() * 2
+              }}
+            />
+          ))}
+
+          {/* Scanning Line */}
+          <motion.div
+            animate={{ top: ["0%", "100%"] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50 shadow-[0_0_10px_rgba(6,182,212,0.5)]"
+          />
+        </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-center max-w-3xl mx-auto mb-20"
+          >
             <h2 className="text-4xl lg:text-5xl font-bold mb-6 tracking-tight">Built for Serious Engineering</h2>
             <p className="text-lg text-slate-400 leading-relaxed">
               Generic platforms fail at deep-tech. We built a system specifically for R&D,
               hardware-software co-design, and scientific commercialization.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -316,10 +398,11 @@ export default function LandingPage() {
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
                 viewport={{ once: true }}
+                whileHover={{ y: -5 }}
                 className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
               >
                 <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center mb-6 border border-slate-700">
@@ -412,13 +495,6 @@ export default function LandingPage() {
 
       {/* 
         ========================================
-        WHY CHOOSE US (Serious Engineering)
-        ========================================
-      */}
-
-
-      {/* 
-        ========================================
         FEATURED EXPERTS
         ========================================
       */}
@@ -463,18 +539,39 @@ export default function LandingPage() {
       */}
       <section id="features" className="py-24 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-16">Flexible Engagement Models</h2>
-          <div className="grid md:grid-cols-4 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Flexible Engagement Models</h2>
+            <p className="text-slate-500 max-w-2xl mx-auto">Choose the working style that best fits your R&D timeline and budget.</p>
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid md:grid-cols-4 gap-8"
+          >
             {engagementModels.map((model, idx) => (
-              <div key={idx} className="bg-slate-50 p-8 rounded-3xl hover:bg-white hover:shadow-xl transition-all border border-slate-100">
+              <motion.div
+                key={idx}
+                variants={itemVariants}
+                whileHover={{ y: -10, scale: 1.02 }}
+                className="bg-slate-50 p-8 rounded-3xl hover:bg-white hover:shadow-xl transition-all border border-slate-100 cursor-default"
+              >
                 <div className={`w-14 h-14 rounded-2xl ${model.bg} ${model.color} flex items-center justify-center mb-6`}>
                   <model.icon size={28} />
                 </div>
                 <h3 className="font-bold text-xl text-slate-900 mb-2">{model.title}</h3>
                 <p className="text-slate-500 leading-relaxed">{model.description}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -487,25 +584,27 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-5xl p-12 md:p-24 text-center relative overflow-hidden shadow-2xl">
           <div className="relative z-10">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 tracking-tight">
-              Ready to future-proof your business?
+              Start Building with Confidence
             </h2>
-            <Button
-              size="xl"
-              className="h-16 px-12 text-lg font-bold bg-white text-slate-900 hover:bg-slate-100 rounded-2xl"
-              onClick={() => navigate(isAuthenticated ? "/projects/new" : "/register")}
-            >
-              Post a Project
-            </Button>
+            <p className="text-xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Your intellectual property is protected from day one. Every project includes auto-generated NDAs, version-controlled IP assignments, and bank-grade data security.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="xl" className="bg-white text-slate-900 hover:bg-slate-100 font-bold px-10 h-14 rounded-xl" onClick={() => navigate(isAuthenticated ? "/experts" : "/register")}>
+                Post a Project <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button size="xl" variant="outline" className="border-slate-700 text-white hover:bg-slate-800 hover:text-white h-14 px-10 rounded-xl" onClick={() => navigate("/register?role=expert")}>
+                Apply as Expert
+              </Button>
+            </div>
           </div>
 
-          {/* Abstract BG */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
-            <div className="absolute top-[-50%] left-[-20%] w-[800px] h-[800px] bg-indigo-500 rounded-full blur-[150px]" />
-          </div>
+          {/* Decorative Glows */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
         </div>
       </section>
 
     </Layout>
   );
 }
-

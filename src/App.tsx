@@ -318,7 +318,7 @@ const App = () => {
                 <SupportHistoryPage />
               </ProtectedRoute>
             } />
-            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/howitworks" element={<HowItWorks />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

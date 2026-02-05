@@ -5,6 +5,7 @@ import { AsteaiBot } from "@/components/ui/AsteaiBot";
 // Messages
 const sectionMessages: Record<string, string> = {
     hero: "Welcome to ASTEAI! I'm your DeepTech guide. 🤖",
+    "serious-engineering": "We're built different. IP Protection & Milestone payments included! 🔒",
     domains: "From Quantum to BioTech, find any expert here! 🧬",
     experts: "Verified PhDs and Engineers ready to help. 👨‍🔬",
     features: "Hourly, Fixed, or Retainer - you choose! ⚖️",
