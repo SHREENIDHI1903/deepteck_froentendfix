@@ -217,6 +217,20 @@ export default function LandingPage() {
     { label: "Satisfaction Rate", value: "99%" },
   ];
 
+  const categoryImages: Record<string, string> = {
+    // Tech
+    ai_ml: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&auto=format&fit=crop&q=60",
+    robotics: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&auto=format&fit=crop&q=60",
+    biotech: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=600&auto=format&fit=crop&q=60",
+    quantum: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&auto=format&fit=crop&q=60",
+    cybersecurity: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&auto=format&fit=crop&q=60",
+    space_tech: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=60",
+    blockchain: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&auto=format&fit=crop&q=60",
+
+    // Default fallback
+    default: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=60"
+  };
+
 
 
   return (
@@ -626,6 +640,7 @@ export default function LandingPage() {
           >
             {domains.map(([key, label], i) => {
               const IconComponent = domainIcons[key] || domainIcons.default;
+              const bgImage = categoryImages[key] || categoryImages.default;
 
               return (
                 <motion.div
@@ -633,34 +648,36 @@ export default function LandingPage() {
                   variants={itemVariants}
                   whileHover={{
                     y: -8,
-                    boxShadow: "0 20px 40px -5px rgba(0, 0, 0, 0.1)",
-                    borderColor: "rgba(99, 102, 241, 0.4)" // Primary color hint
+                    scale: 1.02,
                   }}
-                  className="group p-8 rounded-3xl bg-slate-50 border border-slate-100 transition-all cursor-pointer relative overflow-hidden"
+                  className="group relative h-64 p-8 rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
                   onClick={() => navigate(`/experts?domain=${key}`)}
                 >
-                  {/* Hover Gradient Background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white to-slate-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Background Image with Zoom Effect */}
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                    style={{ backgroundImage: `url(${bgImage})` }}
+                  />
 
-                  <div className="relative z-10">
+                  {/* Dark Gradient Overlay for Readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/30 group-hover:via-slate-900/50 transition-colors duration-500" />
+
+                  {/* Content */}
+                  <div className="relative z-10 flex flex-col h-full justify-between">
                     <motion.div
-                      className="w-14 h-14 rounded-2xl bg-white text-slate-600 group-hover:bg-primary group-hover:text-white transition-colors shadow-sm flex items-center justify-center mb-6"
+                      className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-inner"
                       whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
                     >
                       <IconComponent size={28} />
                     </motion.div>
-                    <h3 className="font-bold text-xl text-slate-900 mb-2 group-hover:text-primary transition-colors">{label}</h3>
-                    <div className="flex items-center text-sm text-slate-400 group-hover:text-slate-500 transition-colors">
-                      <span>120+ Experts</span>
-                      <motion.span
-                        className="ml-auto opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"
-                      >
-                        <ArrowRight size={16} />
-                      </motion.span>
+
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-1 tracking-wide">{label}</h3>
+                      <div className="h-1 w-12 bg-indigo-500 rounded-full group-hover:w-full transition-all duration-500" />
                     </div>
                   </div>
                 </motion.div>
-              )
+              );
             })}
           </motion.div>
         </div>
