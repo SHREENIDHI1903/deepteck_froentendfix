@@ -127,12 +127,85 @@ export default function LandingPage() {
 
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
 
+  // Preload images to prevent flashing
+  useEffect(() => {
+    const imageUrls = [
+      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60",
+      "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=60"
+    ];
+    imageUrls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentHeroImage((prev) => (prev + 1) % 7);
     }, 4000);
     return () => clearInterval(timer);
   }, []);
+
+  // ... (inside return)
+
+  {/* Right Illustration - Slideshow */ }
+  <motion.div
+    className="lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 min-h-[350px] lg:h-[500px]"
+    initial={{ opacity: 0, x: 20 }}
+    whileInView={{ opacity: 1, x: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.8, delay: 0.2 }}
+  >
+    {/* Background Glow - Pulsing */}
+    <motion.div
+      animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      className="absolute w-[300px] h-[300px] lg:w-[500px] lg:h-[500px] bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 rounded-full blur-[60px] lg:blur-[80px] -z-10"
+    />
+
+    {/* Animated Slideshow */}
+    <div className="relative w-[280px] h-[280px] lg:w-full lg:max-w-[380px] lg:aspect-square">
+      <AnimatePresence mode="popLayout"> {/* Changed mode to popLayout for smoother transitions */}
+        <motion.img
+          key={currentHeroImage}
+          src={[
+            "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop&q=60", // Robotics
+            "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=60", // AI Brain
+            "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&auto=format&fit=crop&q=60", // DNA/Biotech
+            "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop&q=60", // Quantum
+            "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=60", // Cybersecurity
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60", // Space Tech
+            "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=60"  // Blockchain
+          ][currentHeroImage]}
+          alt="DeepTech Innovation"
+          className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl border-4 border-white/10 backdrop-blur-sm"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
+      </AnimatePresence>
+
+      {/* Floating Badge overlay */}
+      <motion.div
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -bottom-4 -right-2 lg:-bottom-6 lg:-right-6 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-xl flex items-center gap-2 z-20"
+      >
+        <span className="text-2xl">
+          {["🤖", "🧠", "🧬", "⚛️", "🛡️", "🚀", "🔗"][currentHeroImage]}
+        </span>
+        <span className="font-bold text-slate-800 text-sm">
+          {["Robotics", "AI Neural", "Biotech", "Quantum", "Cybersecurity", "Space Tech", "Blockchain"][currentHeroImage]}
+        </span>
+      </motion.div>
+    </div>
+  </motion.div>
 
   const domains = Object.entries(domainLabels);
 
