@@ -264,7 +264,7 @@ export default function LandingPage() {
 
     // Business & Operations
     business_consulting: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&auto=format&fit=crop&q=60", // Professional suit/dark
-    financial_consulting: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&auto=format&fit=crop&q=60", // Money Plant/Growth/Strategy
+    financial_consulting: "https://images.unsplash.com/photo-1642543492481-44e81e3914a7?w=600&auto=format&fit=crop&q=60", // Dark Finance/Crypto Chart
     accounting: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=60", // Calculator/Ledger
     legal_consulting: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=600&auto=format&fit=crop&q=60", // Gavel (Darker)
     hr_recruiting: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=600&auto=format&fit=crop&q=60", // Team meeting (Darker info)
