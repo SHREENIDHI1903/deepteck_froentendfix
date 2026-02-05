@@ -46,8 +46,8 @@ import {
   Briefcase,
   Headphones,
 } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import heroChar from "@/assets/hero_character_3d.png";
 import { HeroBackground } from "@/components/layout/HeroBackground";
 import { AsteaiBot } from "@/components/ui/AsteaiBot";
@@ -124,6 +124,15 @@ export default function LandingPage() {
     target: ref,
     offset: ["start start", "end start"],
   });
+
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHeroImage((prev) => (prev + 1) % 7);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   const domains = Object.entries(domainLabels);
 
@@ -363,26 +372,57 @@ export default function LandingPage() {
 
             </motion.div>
 
-            {/* Right Illustration */}
+            {/* Right Illustration - Slideshow */}
             <motion.div
-              className="lg:w-1/2 relative flex justify-center items-center h-[500px]" // Added fixed height for centering
+              className="lg:w-1/2 relative flex justify-center items-center h-[500px]"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              {/* Background Glow */}
-              <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-blue-100 to-purple-100 rounded-full blur-[100px] -z-10 opacity-60" />
-
-              {/* Interactive Bot */}
-              <motion.img
-                src={heroChar}
-                alt="DeepTech Expert"
-                className="relative z-10 w-full max-w-[320px] lg:max-w-[380px] object-contain drop-shadow-2xl"
-                animate={floatAnimation}
+              {/* Background Glow - Pulsing */}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 rounded-full blur-[80px] -z-10"
               />
 
+              {/* Animated Slideshow */}
+              <div className="relative w-full max-w-[320px] lg:max-w-[380px] aspect-square">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={currentHeroImage}
+                    src={[
+                      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop&q=60", // Robotics
+                      "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=60", // AI Brain
+                      "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&auto=format&fit=crop&q=60", // DNA/Biotech
+                      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800&auto=format&fit=crop&q=60", // Quantum
+                      "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=60", // Cybersecurity
+                      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=60", // Space Tech
+                      "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&auto=format&fit=crop&q=60"  // Blockchain
+                    ][currentHeroImage]}
+                    alt="DeepTech Innovation"
+                    className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl border-4 border-white/10 backdrop-blur-sm"
+                    initial={{ opacity: 0, x: 20, scale: 0.9 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -20, scale: 1.1 }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </AnimatePresence>
 
-
+                {/* Floating Badge overlay */}
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -bottom-6 -right-6 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-xl flex items-center gap-2"
+                >
+                  <span className="text-2xl">
+                    {["🤖", "🧠", "🧬", "⚛️", "🛡️", "🚀", "🔗"][currentHeroImage]}
+                  </span>
+                  <span className="font-bold text-slate-800 text-sm">
+                    {["Robotics", "AI Neural", "Biotech", "Quantum", "Cybersecurity", "Space Tech", "Blockchain"][currentHeroImage]}
+                  </span>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
         </div>
