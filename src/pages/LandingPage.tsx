@@ -755,18 +755,18 @@ export default function LandingPage() {
               Your intellectual property is protected from day one. Every project includes auto-generated NDAs, version-controlled IP assignments, and bank-grade data security.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="xl" className="bg-white text-slate-900 hover:bg-slate-200 font-bold px-10 h-14 rounded-2xl transition-all duration-300" onClick={() => navigate(isAuthenticated ? "/experts" : "/register")}>
+              <Button size="xl" className="bg-indigo-600 text-white hover:bg-indigo-700 font-bold px-10 h-14 rounded-2xl transition-all duration-300 shadow-lg shadow-indigo-500/25" onClick={() => navigate(isAuthenticated ? "/experts" : "/register")}>
                 Post a Project <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="xl" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 font-bold px-10 h-14 rounded-2xl transition-all duration-300" onClick={() => navigate("/register?role=expert")}>
+              <Button size="xl" className="bg-transparent border-2 border-white/20 text-white hover:bg-white/10 hover:border-white font-bold px-10 h-14 rounded-2xl transition-all duration-300" onClick={() => navigate("/register?role=expert")}>
                 Apply as Expert
               </Button>
             </div>
           </div>
 
           {/* Decorative Glows */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 -z-10" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 -z-10" />
         </div>
       </section>
 
