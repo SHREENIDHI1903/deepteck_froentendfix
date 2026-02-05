@@ -2,15 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { AsteaiBot } from "@/components/ui/AsteaiBot";
 
-// Messages
-const sectionMessages: Record<string, string> = {
-    hero: "Welcome to ASTEAI! I'm your DeepTech guide. 🤖",
-    "serious-engineering": "We're built different. IP Protection & Milestone payments included! 🔒",
-    domains: "From Quantum to BioTech, find any expert here! 🧬",
-    experts: "Verified PhDs and Engineers ready to help. 👨‍🔬",
-    features: "Hourly, Fixed, or Retainer - you choose! ⚖️",
-    cta: "Ready to build the future? Let's go! 🚀",
-};
+
 
 // Typewriter Effect Component
 function TypewriterText({ text }: { text: string }) {
@@ -38,8 +30,18 @@ export function ScrollCompanion() {
     const [activeSection, setActiveSection] = useState("hero");
     const [isVisible, setIsVisible] = useState(false);
 
+    // Simplified Messages - Direct & Helpful
+    const sectionMessages: Record<string, string> = {
+        hero: "Hi! I'm Asteai. Scroll down to see the magic! 👇",
+        "serious-engineering": "We verify every expert. Your IP is safe with us! �",
+        domains: "👉 HOVER over these cards! They have a 3D Tilt effect! 🧊",
+        experts: "Verified PhDs and Engineers ready to help. 👨‍🔬",
+        features: "Hourly or Fixed? Pick the model that fits your budget. ⚖️",
+        cta: "Don't wait! Let's build something amazing together. 🚀",
+    };
+
     useEffect(() => {
-        const timer = setTimeout(() => setIsVisible(true), 1500);
+        const timer = setTimeout(() => setIsVisible(true), 500);
 
         const handleScroll = () => {
             const sections = Object.keys(sectionMessages);
@@ -47,7 +49,7 @@ export function ScrollCompanion() {
                 const element = document.getElementById(section);
                 if (element) {
                     const rect = element.getBoundingClientRect();
-                    // Detect center of screen
+                    // Detect if section is in middle of viewport
                     if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
                         setActiveSection(section);
                     }
@@ -71,13 +73,16 @@ export function ScrollCompanion() {
                     exit={{ opacity: 0, y: 50, scale: 0.8 }}
                     className="fixed bottom-8 right-8 z-50 flex flex-col items-end pointer-events-none"
                 >
-                    {/* Speech Bubble */}
+                    {/* Speech Bubble - Always Visible Context */}
                     <motion.div
                         key={activeSection}
                         initial={{ opacity: 0, x: 20, scale: 0.9 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
-                        className="mb-4 mr-10 bg-white px-5 py-3 rounded-2xl rounded-tr-none shadow-xl border border-slate-100 max-w-[220px]"
+                        className="mb-4 mr-10 bg-white px-5 py-3 rounded-2xl rounded-tr-none shadow-xl border border-slate-100 max-w-[240px]"
                     >
+                        <p className="text-sm font-bold text-indigo-600 mb-1 uppercase tracking-wider text-[10px]">
+                            Asteai Guide
+                        </p>
                         <p className="text-sm font-medium text-slate-700 leading-snug">
                             <TypewriterText text={sectionMessages[activeSection] || sectionMessages.hero} />
                         </p>
@@ -85,9 +90,9 @@ export function ScrollCompanion() {
                         <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white transform rotate-45 border-b border-r border-slate-100" />
                     </motion.div>
 
-                    {/* The Bot (Interactive) */}
-                    <div className="w-24 h-24 pointer-events-auto cursor-pointer hover:scale-105 transition-transform relative">
-                        <div className="scale-[0.35] origin-bottom-right absolute bottom-0 right-0 w-80 h-80">
+                    {/* The Bot - No Click Interaction Needed */}
+                    <div className="w-32 h-32 pointer-events-auto hover:scale-105 transition-transform relative">
+                        <div className="scale-[0.45] origin-bottom-right absolute bottom-0 right-0 w-80 h-80">
                             <AsteaiBot />
                         </div>
                     </div>

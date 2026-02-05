@@ -52,6 +52,7 @@ import heroChar from "@/assets/hero_character_3d.png";
 import { HeroBackground } from "@/components/layout/HeroBackground";
 import { AsteaiBot } from "@/components/ui/AsteaiBot";
 import { ScrollCompanion } from "@/components/ui/ScrollCompanion";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 // --- Domain Icon Mapping ---
 const domainIcons: Record<string, any> = {
@@ -292,7 +293,6 @@ export default function LandingPage() {
 
   return (
     <Layout>
-      <ScrollCompanion />
       {/* 
         ========================================
         HERO SECTION (Split Layout)
@@ -492,7 +492,7 @@ export default function LandingPage() {
 
             {/* Right Illustration - Slideshow */}
             <motion.div
-              className={`lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 ${isMobile ? 'min-h-[300px]' : 'h-[500px]'}`}
+              className={`lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 ${isMobile ? 'min-h-[350px]' : 'lg:min-h-[750px]'}`}
               initial={{ opacity: 0, x: isMobile ? 0 : 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -507,7 +507,7 @@ export default function LandingPage() {
               )}
 
               {/* Animated Slideshow */}
-              <div className="relative w-[280px] h-[280px] lg:w-full lg:max-w-[380px] lg:aspect-square">
+              <div className="relative w-[280px] h-[350px] lg:w-full lg:max-w-[600px] lg:aspect-[3/4]">
                 <AnimatePresence mode="popLayout">
                   <motion.img
                     key={currentHeroImage}
@@ -700,39 +700,35 @@ export default function LandingPage() {
               const bgImage = categoryImages[key] || categoryImages.default;
 
               return (
-                <motion.div
-                  key={key}
-                  variants={itemVariants}
-                  whileHover={{
-                    y: -8,
-                    scale: 1.02,
-                  }}
-                  className="group relative h-64 p-8 rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
-                  onClick={() => navigate(`/experts?domain=${key}`)}
-                >
-                  {/* Background Image with Zoom Effect */}
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url(${bgImage})` }}
-                  />
+                <motion.div key={key} variants={itemVariants}>
+                  <TiltCard
+                    className="group relative h-64 rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
+                    onClick={() => navigate(`/experts?domain=${key}`)}
+                  >
+                    {/* Background Image with Zoom Effect */}
+                    <div
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                      style={{ backgroundImage: `url(${bgImage})` }}
+                    />
 
-                  {/* Dark Gradient Overlay for Readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/30 group-hover:via-slate-900/50 transition-colors duration-500" />
+                    {/* Dark Gradient Overlay for Readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/30 group-hover:via-slate-900/50 transition-colors duration-500" />
 
-                  {/* Content */}
-                  <div className="relative z-10 flex flex-col h-full justify-between">
-                    <motion.div
-                      className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-inner"
-                      whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                    >
-                      <IconComponent size={28} />
-                    </motion.div>
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col h-full justify-between p-8">
+                      <motion.div
+                        className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-inner"
+                        whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
+                      >
+                        <IconComponent size={28} />
+                      </motion.div>
 
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-1 tracking-wide">{label}</h3>
-                      <div className="h-1 w-12 bg-indigo-500 rounded-full group-hover:w-full transition-all duration-500" />
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-1 tracking-wide">{label}</h3>
+                        <div className="h-1 w-12 bg-indigo-500 rounded-full group-hover:w-full transition-all duration-500" />
+                      </div>
                     </div>
-                  </div>
+                  </TiltCard>
                 </motion.div>
               );
             })}
