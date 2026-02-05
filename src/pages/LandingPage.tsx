@@ -174,32 +174,40 @@ export default function LandingPage() {
       title: "Hourly Rate",
       description: "Pay for actual time spent. Flexible & focused.",
       color: "text-amber-600",
-      bg: "bg-amber-100",
-      border: "border-amber-200",
+      gradient: "from-amber-500 to-orange-600",
+      lightBg: "bg-amber-50",
+      hoverBorder: "hover:border-amber-200",
+      shadow: "hover:shadow-amber-500/20"
     },
     {
       icon: Target,
       title: "Fixed Price",
       description: "Set a scope, agree on a price. Done deal.",
       color: "text-blue-600",
-      bg: "bg-blue-100",
-      border: "border-blue-200",
+      gradient: "from-blue-500 to-indigo-600",
+      lightBg: "bg-blue-50",
+      hoverBorder: "hover:border-blue-200",
+      shadow: "hover:shadow-blue-500/20"
     },
     {
       icon: Rocket,
       title: "Sprint Based",
       description: "2-week agile cycles. Fast demos & deliverables.",
       color: "text-purple-600",
-      bg: "bg-purple-100",
-      border: "border-purple-200",
+      gradient: "from-purple-500 to-pink-600",
+      lightBg: "bg-purple-50",
+      hoverBorder: "hover:border-purple-200",
+      shadow: "hover:shadow-purple-500/20"
     },
     {
       icon: CalendarDays,
       title: "Retainer",
       description: "Ongoing support for long-term growth.",
       color: "text-emerald-600",
-      bg: "bg-emerald-100",
-      border: "border-emerald-200",
+      gradient: "from-emerald-500 to-teal-600",
+      lightBg: "bg-emerald-50",
+      hoverBorder: "hover:border-emerald-200",
+      shadow: "hover:shadow-emerald-500/20"
     },
   ];
 
@@ -726,14 +734,17 @@ export default function LandingPage() {
               <motion.div
                 key={idx}
                 variants={itemVariants}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="bg-slate-50 p-8 rounded-3xl hover:bg-white hover:shadow-xl transition-all border border-slate-100 cursor-default"
+                whileHover={{ y: -8, scale: 1.02 }}
+                className={`bg-white p-8 rounded-3xl border border-slate-100 shadow-sm transition-all duration-300 group cursor-default ${model.hoverBorder} ${model.shadow} hover:shadow-2xl`}
               >
-                <div className={`w-14 h-14 rounded-2xl ${model.bg} ${model.color} flex items-center justify-center mb-6`}>
-                  <model.icon size={28} />
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${model.gradient} flex items-center justify-center mb-6 shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+                  <model.icon size={32} className="text-white" />
                 </div>
-                <h3 className="font-bold text-xl text-slate-900 mb-2">{model.title}</h3>
-                <p className="text-slate-500 leading-relaxed">{model.description}</p>
+                <h3 className="font-bold text-xl text-slate-900 mb-3">{model.title}</h3>
+                <p className="text-slate-500 leading-relaxed font-medium">{model.description}</p>
+
+                {/* Subtle decorative line */}
+                <div className={`mt-6 h-1 w-12 rounded-full bg-gradient-to-r ${model.gradient} opacity-20 group-hover:opacity-100 group-hover:w-full transition-all duration-500`} />
               </motion.div>
             ))}
           </motion.div>
