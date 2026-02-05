@@ -250,6 +250,17 @@ export default function LandingPage() {
     { label: "Satisfaction Rate", value: "99%" },
   ];
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <Layout>
       <ScrollCompanion />
@@ -263,17 +274,21 @@ export default function LandingPage() {
 
         {/* Full Section Background Motion Slideshow */}
         <div className="absolute inset-0 -z-0 overflow-hidden pointer-events-none">
+          {/* Animated Background Gradient - Simplified for Mobile */}
           <motion.div
             animate={{
-              backgroundPosition: ["0% 0%", "100% 100%"],
-              opacity: [0.3, 0.5, 0.3]
+              backgroundPosition: isMobile ? "0% 0%" : ["0% 0%", "100% 100%"], // Static position on mobile
+              opacity: [0.3, 0.5, 0.3] // Opacity pulse remains
             }}
             transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
             className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[image:radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-200/40 via-transparent to-transparent blur-3xl"
           />
 
-          {/* Floating Icons Slideshow - Full Screen */}
-          {[BrainCircuit, FileCheck, Rocket, Zap, Globe, Cpu, Dna, Database, ShieldCheck, Microscope].map((Icon, i) => (
+          {/* Floating Icons Slideshow - Full Screen - Reduced count on mobile */}
+          {(isMobile
+            ? [BrainCircuit, Rocket, Globe, Cpu, ShieldCheck].slice(0, 5) // Show only 5 icons on mobile
+            : [BrainCircuit, FileCheck, Rocket, Zap, Globe, Cpu, Dna, Database, ShieldCheck, Microscope]
+          ).map((Icon, i) => (
             <motion.div
               key={i}
               className="absolute text-indigo-600/40"
@@ -294,7 +309,8 @@ export default function LandingPage() {
                 ease: "easeInOut"
               }}
             >
-              <Icon size={Math.random() * 80 + 40} />
+              {/* @ts-ignore - Icon type compatibility */}
+              <Icon size={isMobile ? Math.random() * 40 + 30 : Math.random() * 80 + 40} />
             </motion.div>
           ))}
         </div>

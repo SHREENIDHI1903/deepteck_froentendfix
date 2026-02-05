@@ -37,27 +37,30 @@ export function HeroBackground() {
             {/* 
         1. Animated Gradient Orbs 
         These move slowly and morph to create a "living" background feel.
-        Optimized for mobile: reduced blur and opacity.
+            {/* 
+        1. Animated Gradient Orbs 
+        These move slowly and morph to create a "living" background feel.
+        Optimized for mobile: Active movement but with reduced blur (40px vs 100px) for performance.
       */}
             <motion.div
                 animate={{
                     scale: [1, 1.2, 1],
-                    opacity: isMobile ? [0.2, 0.3, 0.2] : [0.3, 0.5, 0.3], // Reduced opacity on mobile
+                    opacity: [0.3, 0.5, 0.3],
                     x: [0, 100, 0],
                     y: [0, -50, 0],
                 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className={`absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-300/30 rounded-full ${isMobile ? 'blur-[60px]' : 'blur-[100px]'}`}
+                className={`absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-300/30 rounded-full ${isMobile ? 'blur-[40px] opacity-40' : 'blur-[100px]'}`}
             />
             <motion.div
                 animate={{
                     scale: [1, 1.1, 1],
-                    opacity: isMobile ? [0.2, 0.4, 0.2] : [0.3, 0.6, 0.3],
+                    opacity: [0.3, 0.6, 0.3],
                     x: [0, -100, 0],
                     y: [0, 50, 0],
                 }}
                 transition={{ duration: 25, repeat: Infinity, ease: "linear", delay: 2 }}
-                className={`absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-blue-300/30 rounded-full ${isMobile ? 'blur-[60px]' : 'blur-[100px]'}`}
+                className={`absolute top-[20%] right-[-10%] w-[600px] h-[600px] bg-blue-300/30 rounded-full ${isMobile ? 'blur-[40px] opacity-40' : 'blur-[100px]'}`}
             />
             <motion.div
                 animate={{
@@ -66,7 +69,7 @@ export function HeroBackground() {
                     y: [0, 100, 0],
                 }}
                 transition={{ duration: 30, repeat: Infinity, ease: "linear", delay: 5 }}
-                className={`absolute bottom-[-20%] left-[20%] w-[700px] h-[700px] bg-indigo-300/20 rounded-full ${isMobile ? 'blur-[80px]' : 'blur-[120px]'}`}
+                className={`absolute bottom-[-20%] left-[20%] w-[700px] h-[700px] bg-indigo-300/20 rounded-full ${isMobile ? 'blur-[50px] opacity-30' : 'blur-[120px]'}`}
             />
 
             {/* 
