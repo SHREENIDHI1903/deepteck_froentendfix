@@ -38,6 +38,7 @@ import {
   Atom,
   Globe,
   Palette,
+  Microscope,
   BarChart3,
   Video,
   PenTool,
@@ -178,12 +179,50 @@ export default function LandingPage() {
       <section ref={ref} className="relative pt-24 pb-32 overflow-hidden bg-slate-50/50">
         <HeroBackground />
 
+        {/* Full Section Background Motion Slideshow */}
+        <div className="absolute inset-0 -z-0 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{
+              backgroundPosition: ["0% 0%", "100% 100%"],
+              opacity: [0.3, 0.5, 0.3]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[image:radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-200/40 via-transparent to-transparent blur-3xl"
+          />
+
+          {/* Floating Icons Slideshow - Full Screen */}
+          {[BrainCircuit, FileCheck, Rocket, Zap, Globe, Cpu, Dna, Database, ShieldCheck, Microscope].map((Icon, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-indigo-500/20"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{
+                opacity: [0, 0.6, 0],
+                scale: [0.5, 1.5, 0.5],
+                y: [0, Math.random() * -100 - 50] // Float upwards
+              }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                delay: i * 0.8,
+                ease: "easeInOut"
+              }}
+            >
+              <Icon size={Math.random() * 80 + 40} />
+            </motion.div>
+          ))}
+        </div>
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
 
             {/* Left Content */}
             <motion.div
-              className="lg:w-1/2 z-10 text-center lg:text-left"
+              className="lg:w-1/2 z-10 text-center lg:text-left relative"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -220,8 +259,53 @@ export default function LandingPage() {
                 Marketplace!
               </motion.h1>
 
-              <motion.div variants={itemVariants} className="mb-8 font-mono text-lg sm:text-xl font-bold tracking-wide">
-                <span className="text-blue-600">A</span>chievements = <span className="text-amber-500">S</span>kills + <span className="text-indigo-600">T</span>alent + <span className="text-pink-500">E</span>fforts + <span className="text-green-600">AI</span>
+              <motion.div variants={itemVariants} className="mb-8 font-mono text-lg sm:text-xl font-bold tracking-wide flex flex-wrap gap-2 items-center cursor-default">
+                {/* A */}
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.0, type: "spring" }}>
+                  <motion.span animate={{ y: [0, -4, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="inline-block text-blue-600">
+                    A
+                  </motion.span>
+                </motion.span>
+                chievements
+
+                <motion.span animate={{ opacity: [0, 1] }} transition={{ delay: 1.2 }}>=</motion.span>
+
+                {/* S */}
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.4, type: "spring" }}>
+                  <motion.span animate={{ y: [0, -4, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }} className="inline-block text-amber-500">
+                    S
+                  </motion.span>
+                </motion.span>
+                kills
+
+                <motion.span animate={{ opacity: [0, 1] }} transition={{ delay: 1.6 }}>+</motion.span>
+
+                {/* T */}
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.8, type: "spring" }}>
+                  <motion.span animate={{ y: [0, -4, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }} className="inline-block text-indigo-600">
+                    T
+                  </motion.span>
+                </motion.span>
+                alent
+
+                <motion.span animate={{ opacity: [0, 1] }} transition={{ delay: 2.0 }}>+</motion.span>
+
+                {/* E */}
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.2, type: "spring" }}>
+                  <motion.span animate={{ y: [0, -4, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }} className="inline-block text-pink-500">
+                    E
+                  </motion.span>
+                </motion.span>
+                fforts
+
+                <motion.span animate={{ opacity: [0, 1] }} transition={{ delay: 2.4 }}>+</motion.span>
+
+                {/* AI */}
+                <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.6, type: "spring" }}>
+                  <motion.span animate={{ y: [0, -4, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.8 }} className="inline-block text-green-600">
+                    AI
+                  </motion.span>
+                </motion.span>
               </motion.div>
 
               <motion.h2 variants={itemVariants} className="text-2xl lg:text-3xl font-bold text-slate-700 mb-4">
