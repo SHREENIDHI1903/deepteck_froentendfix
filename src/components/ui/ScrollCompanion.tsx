@@ -29,6 +29,7 @@ function TypewriterText({ text }: { text: string }) {
 export function ScrollCompanion() {
     const [activeSection, setActiveSection] = useState("hero");
     const [isVisible, setIsVisible] = useState(false);
+    const [isMessageOpen, setIsMessageOpen] = useState(true);
 
     // Context-Aware Content Guide
     const sectionMessages: Record<string, string> = {
@@ -52,6 +53,7 @@ export function ScrollCompanion() {
                     // Detect if section is in middle of viewport
                     if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
                         setActiveSection(section);
+                        // Re-open message if user scrolls to a new meaningful section (optional, keeping manual control for now based on request)
                     }
                 }
             }
@@ -64,6 +66,10 @@ export function ScrollCompanion() {
         };
     }, []);
 
+    const toggleMessage = () => {
+        setIsMessageOpen(!isMessageOpen);
+    };
+
     return (
         <AnimatePresence>
             {isVisible && (
@@ -74,24 +80,32 @@ export function ScrollCompanion() {
                     className="fixed bottom-8 right-8 z-50 flex flex-col items-end pointer-events-none"
                 >
                     {/* Speech Bubble - Always Visible Context */}
-                    <motion.div
-                        key={activeSection}
-                        initial={{ opacity: 0, x: 20, scale: 0.9 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        className="mb-4 mr-10 bg-white px-5 py-3 rounded-2xl rounded-tr-none shadow-xl border border-slate-100 max-w-[240px]"
-                    >
-                        <p className="text-sm font-bold text-indigo-600 mb-1 uppercase tracking-wider text-[10px]">
-                            ASTEAI Guide
-                        </p>
-                        <p className="text-sm font-medium text-slate-700 leading-snug">
-                            <TypewriterText text={sectionMessages[activeSection] || sectionMessages.hero} />
-                        </p>
-                        {/* Bubble Tail */}
-                        <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white transform rotate-45 border-b border-r border-slate-100" />
-                    </motion.div>
+                    <AnimatePresence>
+                        {isMessageOpen && (
+                            <motion.div
+                                key={activeSection}
+                                initial={{ opacity: 0, x: 20, scale: 0.9 }}
+                                animate={{ opacity: 1, x: 0, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+                                className="mb-4 mr-10 bg-white px-5 py-3 rounded-2xl rounded-tr-none shadow-xl border border-slate-100 max-w-[240px] pointer-events-auto"
+                            >
+                                <p className="text-sm font-bold text-indigo-600 mb-1 uppercase tracking-wider text-[10px]">
+                                    ASTEAI Guide
+                                </p>
+                                <p className="text-sm font-medium text-slate-700 leading-snug">
+                                    <TypewriterText text={sectionMessages[activeSection] || sectionMessages.hero} />
+                                </p>
+                                {/* Bubble Tail */}
+                                <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white transform rotate-45 border-b border-r border-slate-100" />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                    {/* The Bot - No Click Interaction Needed */}
-                    <div className="w-32 h-32 pointer-events-auto hover:scale-105 transition-transform relative">
+                    {/* The Bot - Clickable to Toggle Message */}
+                    <div
+                        onClick={toggleMessage}
+                        className="w-32 h-32 pointer-events-auto hover:scale-105 transition-transform relative cursor-pointer"
+                    >
                         <div className="scale-[0.45] origin-bottom-right absolute bottom-0 right-0 w-80 h-80">
                             <AsteaiBot />
                         </div>
