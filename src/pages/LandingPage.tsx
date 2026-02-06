@@ -298,7 +298,7 @@ export default function LandingPage() {
         HERO SECTION (Split Layout)
         ========================================
       */}
-      <section ref={ref} className="relative pt-24 pb-32 overflow-hidden bg-slate-50/50">
+      <section id="hero" ref={ref} className="relative pt-24 pb-32 overflow-hidden bg-slate-50/50">
         <HeroBackground />
 
         {/* Full Section Background Motion Slideshow */}
@@ -560,6 +560,9 @@ export default function LandingPage() {
         <div className="absolute inset-0 z-0 opacity-30">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
+          {/* Added Glow Effect - Increased Opacity and Brightness */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[600px] bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none mix-blend-screen" />
+
           {/* Moving Data Beams (Horizontal) */}
           <motion.div
             animate={{ backgroundPosition: ["0% 0%", "100% 0%"] }}
@@ -669,7 +672,12 @@ export default function LandingPage() {
       */}
       <section id="domains" className="py-24 bg-white relative overflow-hidden">
         {/* Decorative Blob for Categories */}
-        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-slate-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
+        {/* Decorative Blob for Categories - Increased Opacity */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.6, 0.9, 0.6] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-500/30 to-purple-500/30 rounded-full blur-[120px] -z-10 pointer-events-none"
+        />
 
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
@@ -741,7 +749,11 @@ export default function LandingPage() {
         FEATURED EXPERTS
         ========================================
       */}
-      <section id="experts" className="py-24 bg-slate-50">
+      <section id="experts" className="py-24 bg-slate-50 relative overflow-hidden">
+        {/* Glow Effect */}
+        {/* Glow Effect - Increased Opacity */}
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-purple-500/15 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-indigo-500/15 blur-[120px] rounded-full pointer-events-none" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 mb-4">Highest Rated Experts</h2>
@@ -780,7 +792,10 @@ export default function LandingPage() {
         ENGAGEMENT MODELS
         ========================================
       */}
-      <section id="features" className="py-24 bg-white">
+      <section id="features" className="py-24 bg-white relative overflow-hidden">
+        {/* Center Glow */}
+        {/* Center Glow - Increased Opacity */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] bg-gradient-to-r from-indigo-500/15 to-purple-500/15 blur-[130px] rounded-full pointer-events-none" />
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -850,6 +865,8 @@ export default function LandingPage() {
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 -z-10" />
         </div>
       </section>
+
+      <ScrollCompanion />
 
     </Layout>
   );

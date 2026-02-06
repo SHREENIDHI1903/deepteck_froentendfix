@@ -6,14 +6,14 @@ import { AsteaiBot } from "@/components/ui/AsteaiBot";
 
 // Typewriter Effect Component
 function TypewriterText({ text }: { text: string }) {
-    const [displayedText, setDisplayedText] = useState("");
+    const [displayedLength, setDisplayedLength] = useState(0);
 
     useEffect(() => {
-        setDisplayedText("");
+        setDisplayedLength(0);
         let i = 0;
         const timer = setInterval(() => {
             if (i < text.length) {
-                setDisplayedText((prev) => prev + text.charAt(i));
+                setDisplayedLength((prev) => prev + 1);
                 i++;
             } else {
                 clearInterval(timer);
@@ -23,21 +23,21 @@ function TypewriterText({ text }: { text: string }) {
         return () => clearInterval(timer);
     }, [text]);
 
-    return <span>{displayedText}</span>;
+    return <span>{text.slice(0, displayedLength)}</span>;
 }
 
 export function ScrollCompanion() {
     const [activeSection, setActiveSection] = useState("hero");
     const [isVisible, setIsVisible] = useState(false);
 
-    // Simplified Messages - Direct & Helpful
+    // Context-Aware Content Guide
     const sectionMessages: Record<string, string> = {
-        hero: "Hi! I'm Asteai. Scroll down to see the magic! 👇",
-        "serious-engineering": "We verify every expert. Your IP is safe with us! �",
-        domains: "👉 HOVER over these cards! They have a 3D Tilt effect! 🧊",
-        experts: "Verified PhDs and Engineers ready to help. 👨‍🔬",
-        features: "Hourly or Fixed? Pick the model that fits your budget. ⚖️",
-        cta: "Don't wait! Let's build something amazing together. 🚀",
+        hero: "ASTEAI is the World's First Vernacular DeepTech Marketplace, connecting achievements, skills, and talent with AI.",
+        "serious-engineering": "Built for serious engineering. We ensure verified expertise and IP protection for every project.",
+        domains: "Explore specialized talent across emerging technology sectors, from AI to Quantum Computing.",
+        experts: "Work with highest-rated experts, vetted for their domain expertise and proven track record.",
+        features: "Choose the engagement model that fits your needs: Hourly, Fixed Price, Sprint, or Retainer.",
+        cta: "Start building with confidence. Secure your intellectual property from day one.",
     };
 
     useEffect(() => {
@@ -81,7 +81,7 @@ export function ScrollCompanion() {
                         className="mb-4 mr-10 bg-white px-5 py-3 rounded-2xl rounded-tr-none shadow-xl border border-slate-100 max-w-[240px]"
                     >
                         <p className="text-sm font-bold text-indigo-600 mb-1 uppercase tracking-wider text-[10px]">
-                            Asteai Guide
+                            ASTEAI Guide
                         </p>
                         <p className="text-sm font-medium text-slate-700 leading-snug">
                             <TypewriterText text={sectionMessages[activeSection] || sectionMessages.hero} />
