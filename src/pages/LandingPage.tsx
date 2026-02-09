@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ExpertCard } from "@/components/experts/ExpertCard";
 import { domainLabels } from "@/lib/constants";
 import { useExperts } from "@/hooks/useExperts";
+import { CategoryCarousel } from "@/components/landing/CategoryCarousel";
 import {
   ArrowRight,
   Shield,
@@ -28,13 +29,15 @@ import {
   Sparkles,
   Brain,
   Cpu,
+  Bot,
+  Dna,
+  CheckCircle2,
   Code2,
   Smartphone,
   ShieldCheck,
   Database,
   Blocks,
-  Bot,
-  Dna,
+
   Atom,
   Globe,
   Palette,
@@ -298,13 +301,14 @@ export default function LandingPage() {
         HERO SECTION (Split Layout)
         ========================================
       */}
-      <section id="hero" ref={ref} className="relative pt-24 pb-32 overflow-hidden bg-slate-50/50">
+      <section id="hero" ref={ref} className="relative min-h-screen flex items-start pt-6 pb-12 overflow-hidden bg-transparent">
         <HeroBackground />
 
         {/* Full Section Background Motion Slideshow */}
         <div className="absolute inset-0 -z-0 overflow-hidden pointer-events-none">
           {/* Animated Background Gradient - Simplified for Mobile */}
           <motion.div
+            style={{ willChange: "transform, opacity" }}
             animate={{
               backgroundPosition: isMobile ? "0% 0%" : ["0% 0%", "100% 100%"], // Static position on mobile
               opacity: [0.3, 0.5, 0.3] // Opacity pulse remains
@@ -354,7 +358,7 @@ export default function LandingPage() {
               initial="hidden"
               animate="visible"
             >
-              <motion.div variants={itemVariants} className="inline-block mb-6 relative group">
+              <motion.div variants={itemVariants} className="inline-block mb-4 relative group">
                 {/* Backdrop Glow */}
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur opacity-20 group-hover:opacity-60 transition duration-1000 group-hover:duration-200 animation-tilt" />
 
@@ -379,14 +383,14 @@ export default function LandingPage() {
 
               <motion.h1
                 variants={itemVariants}
-                className="text-5xl lg:text-6xl font-black text-slate-900 leading-[1.15] mb-6 tracking-tight"
+                className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-[1.15] mb-2 tracking-tight"
               >
-                ASTEAI - World’s First <br className="hidden lg:block" />
-                Vernacular DeepTech <br className="hidden lg:block" />
-                Marketplace!
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">ASTEAI:</span> Accelerating <br className="hidden lg:block" />
+                DeepTech Innovation <br className="hidden lg:block" />
+                Beyond Language Barriers
               </motion.h1>
 
-              <motion.div variants={itemVariants} className="mb-8 font-mono text-lg sm:text-xl font-bold tracking-wide flex flex-wrap gap-2 items-center cursor-default">
+              <motion.div variants={itemVariants} className="mb-2 font-mono text-lg sm:text-xl font-bold tracking-wide flex flex-wrap gap-2 items-center cursor-default">
                 {/* A */}
                 <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.0, type: "spring" }}>
                   <motion.span animate={{ y: [0, -4, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="inline-block text-blue-600">
@@ -435,17 +439,51 @@ export default function LandingPage() {
                 </motion.span>
               </motion.div>
 
-              <motion.h2 variants={itemVariants} className="text-2xl lg:text-3xl font-bold text-slate-700 mb-4">
-                Build the Future with Specialized Deep-Tech Talent
-              </motion.h2>
-
-              <motion.p
+              <motion.div
                 variants={itemVariants}
-                className="text-lg text-slate-500 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+                className="mb-6 p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-lg relative overflow-hidden group hover:bg-white/50 transition-colors duration-300"
               >
-                Connect with verified specialists in AI, Robotics, Biotech, and Quantum.
-                Execute complex R&D with flexible engagement models designed for innovation.
-              </motion.p>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Cpu className="w-20 h-20 text-indigo-600" />
+                </div>
+
+                <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-2 relative z-10">
+                  Build the Future with <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                    Specialized Deep-Tech Talent
+                  </span>
+                </h2>
+
+                <div className="flex flex-wrap gap-2 mb-4 relative z-10">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100/50 text-xs font-semibold text-indigo-700">
+                    <Brain className="w-3.5 h-3.5" /> AI & ML
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-100/50 text-xs font-semibold text-amber-700">
+                    <Bot className="w-3.5 h-3.5" /> Robotics
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-50 border border-pink-100/50 text-xs font-semibold text-pink-700">
+                    <Dna className="w-3.5 h-3.5" /> Biotech
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-50 border border-cyan-100/50 text-xs font-semibold text-cyan-700">
+                    <Zap className="w-3.5 h-3.5" /> Quantum
+                  </div>
+                </div>
+
+                <ul className="space-y-1 relative z-10">
+                  {[
+                    "Connect with verified Ph.D. & Post-Doc experts.",
+                    "Execute complex R&D with flexible engagement models.",
+                    "IP-centric workflows designed for innovation."
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-start gap-2 text-slate-600 text-sm font-medium">
+                      <div className="mt-1 min-w-[16px]">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      </div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
 
               <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <motion.div
@@ -492,7 +530,7 @@ export default function LandingPage() {
 
             {/* Right Illustration - Slideshow */}
             <motion.div
-              className={`lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 ${isMobile ? 'min-h-[350px]' : 'lg:min-h-[750px]'}`}
+              className={`lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 ${isMobile ? 'min-h-[350px]' : 'lg:min-h-[600px]'}`}
               initial={{ opacity: 0, x: isMobile ? 0 : 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -507,7 +545,7 @@ export default function LandingPage() {
               )}
 
               {/* Animated Slideshow */}
-              <div className="relative w-[280px] h-[350px] lg:w-full lg:max-w-[600px] lg:aspect-[3/4]">
+              <div className="relative w-[280px] h-[350px] lg:w-full lg:max-w-[550px] lg:aspect-[4/5]">
                 <AnimatePresence mode="popLayout">
                   <motion.img
                     key={currentHeroImage}
@@ -547,6 +585,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+
 
 
       {/* 
@@ -670,86 +710,14 @@ export default function LandingPage() {
         DOMAINS (Grid)
         ========================================
       */}
-      <section id="domains" className="py-24 bg-white relative overflow-hidden">
-        {/* Decorative Blob for Categories */}
-        {/* Decorative Blob for Categories - Increased Opacity */}
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.6, 0.9, 0.6] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-indigo-500/30 to-purple-500/30 rounded-full blur-[120px] -z-10 pointer-events-none"
-        />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-between items-end mb-12"
-          >
-            <div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Explore Categories</h2>
-              <p className="text-slate-500 max-w-xl">Find specialized talent in emerging technology sectors.</p>
-            </div>
-            <Button variant="ghost" className="hidden md:flex text-primary hover:text-primary/80 hover:bg-primary/5">
-              View All Categories <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
-          </motion.div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {domains.map(([key, label], i) => {
-              const IconComponent = domainIcons[key] || domainIcons.default;
-              const bgImage = categoryImages[key] || categoryImages.default;
-
-              return (
-                <motion.div key={key} variants={itemVariants}>
-                  <TiltCard
-                    className="group relative h-64 rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500"
-                    onClick={() => navigate(`/experts?domain=${key}`)}
-                  >
-                    {/* Background Image with Zoom Effect */}
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                      style={{ backgroundImage: `url(${bgImage})` }}
-                    />
-
-                    {/* Dark Gradient Overlay for Readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/30 group-hover:via-slate-900/50 transition-colors duration-500" />
-
-                    {/* Content */}
-                    <div className="relative z-10 flex flex-col h-full justify-between p-8">
-                      <motion.div
-                        className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-inner"
-                        whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                      >
-                        <IconComponent size={28} />
-                      </motion.div>
-
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-1 tracking-wide">{label}</h3>
-                        <div className="h-1 w-12 bg-indigo-500 rounded-full group-hover:w-full transition-all duration-500" />
-                      </div>
-                    </div>
-                  </TiltCard>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
+      <CategoryCarousel />
 
       {/* 
         ========================================
         FEATURED EXPERTS
         ========================================
       */}
-      <section id="experts" className="py-24 bg-slate-50 relative overflow-hidden">
+      <section id="experts" className="py-24 bg-slate-50/90 relative overflow-hidden backdrop-filter-none">
         {/* Glow Effect */}
         {/* Glow Effect - Increased Opacity */}
         <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-purple-500/15 blur-[120px] rounded-full pointer-events-none" />
@@ -792,7 +760,7 @@ export default function LandingPage() {
         ENGAGEMENT MODELS
         ========================================
       */}
-      <section id="features" className="py-24 bg-white relative overflow-hidden">
+      <section id="features" className="py-24 bg-white/90 relative overflow-hidden backdrop-filter-none">
         {/* Center Glow */}
         {/* Center Glow - Increased Opacity */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] bg-gradient-to-r from-indigo-500/15 to-purple-500/15 blur-[130px] rounded-full pointer-events-none" />

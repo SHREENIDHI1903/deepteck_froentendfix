@@ -166,6 +166,25 @@ body {
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    position: relative;
+  }
+
+  /* Global Ethereal Purple Glow */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    /* Simplified Gradient: Fewer stops, standard radial */
+    background: 
+      radial-gradient(circle at 10% 10%, rgba(167, 139, 250, 0.15), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.15), transparent 40%);
+    pointer-events: none;
+    /* Reduced blur radius */
+    filter: blur(20px);
+    /* Improve performance */
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   h1,

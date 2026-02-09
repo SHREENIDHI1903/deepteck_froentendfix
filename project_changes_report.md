@@ -57,3 +57,70 @@ This report details the modifications made to the project codebase between **Feb
 ### Key Changes:
 -   **Lenis Integration**: Integrated `lenis` for high-performance inertial scrolling, making the "cyber" feel more premium.
 -   **Route Fixes**: Fixed routing logic for `/howitworks` and `/register` paths to ensure smooth navigation.
+
+The explore categories available in the ASTEAI marketplace are as follows:
+
+### Categories
+
+1. **AI / Machine Learning**
+2. **Data Science & Analytics**
+3. **Web Development**
+4. **Mobile Development**
+5. **Software Engineering**
+6. **DevOps & Cloud Computing**
+7. **Cybersecurity**
+8. **Blockchain & Web3**
+9. **Database Administration**
+10. **QA & Testing**
+11. **Game Development**
+12. **AR / VR Development**
+13. **IoT & Embedded Systems**
+14. **Robotics & Automation**
+15. **Climate Tech**
+16. **Biotechnology**
+17. **Quantum Computing**
+18. **Space Technology**
+19. **Advanced Materials**
+20. **Energy & Storage**
+21. **Deep Infrastructure**
+
+### Creative Services
+
+1. **UI/UX Design**
+2. **Graphic Design**
+3. **Product Design**
+4. **Brand Identity**
+5. **Motion Graphics**
+6. **Illustration**
+7. **Video Production**
+8. **Photography**
+
+### Marketing & Consulting
+
+1. **Digital Marketing**
+2. **Content Marketing**
+3. **SEO & SEM**
+4. **Social Media Marketing**
+5. **Email Marketing**
+6. **Sales Strategy**
+7. **Market Research**
+8. **Business Consulting**
+9. **Financial Consulting**
+10. **Accounting & Bookkeeping**
+11. **Legal Consulting**
+12. **HR & Recruiting**
+13. **Project Management**
+14. **Product Management**
+15. **Operations Management**
+
+### Writing Services
+
+1. **Content Writing**
+2. **Copywriting**
+3. **Technical Writing**
+4. **Translation**
+5. **Editing & Proofreading**
+6. **Customer Support**
+7. **Virtual Assistant**
+
+This array covers a wide range of specialized areas in emerging technologies, creative services, and consulting.
