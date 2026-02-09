@@ -8,12 +8,13 @@ import {
     Truck, BookOpen, Languages, FileEdit, Headset, Keyboard, Layers,
     Leaf, FlaskConical, Component, Wifi, Construction, Monitor, Target
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 
 // --- Data & Helpers ---
 
 const categoryImages: Record<string, string> = {
     // 1. Categories (Tech)
+    deep_tech: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=60", // Generic advanced tech
     ai_ml: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&auto=format&fit=crop&q=60",
     data_science: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=60",
     web_development: "https://images.unsplash.com/photo-1547658719-da2b51169166?w=600&auto=format&fit=crop&q=60",
@@ -81,6 +82,7 @@ const PackageIcon = ({ className }: { className?: string }) => (
 );
 
 const domainIcons: Record<string, any> = {
+    deep_tech: BrainCircuit,
     ai_ml: Brain,
     data_science: BarChart3,
     web_development: Code2,
@@ -149,7 +151,13 @@ const getIcon = (key: string) => {
 };
 
 const categories = [
-    // 1. Categories (Tech)
+    // 1. Top Priority Categories
+    { id: "deep_tech", title: "Deep Tech", description: "Frontier Technologies, Hard Science" },
+    { id: "space_tech", title: "Space Technology", description: "Aerospace, Satellites" },
+    { id: "climate_tech", title: "Climate Tech", description: "Renewables, Green Tech" },
+    { id: "quantum", title: "Quantum Computing", description: "Algorithms, Cryptography" },
+
+    // 2. Categories (Tech)
     { id: "ai_ml", title: "AI / Machine Learning", description: "LLMs, Computer Vision" },
     { id: "data_science", title: "Data Science & Analytics", description: "Big Data, Visualization" },
     { id: "web_development", title: "Web Development", description: "Full Stack, React, Node" },
@@ -164,15 +172,12 @@ const categories = [
     { id: "ar_vr", title: "AR / VR Development", description: "Immersive Experiences" },
     { id: "iot", title: "IoT & Embedded Systems", description: "Sensors, Firmware" },
     { id: "robotics", title: "Robotics & Automation", description: "Drones, Control Systems" },
-    { id: "climate_tech", title: "Climate Tech", description: "Renewables, Green Tech" },
     { id: "biotech", title: "Biotechnology", description: "Genomics, Bioinformatics" },
-    { id: "quantum", title: "Quantum Computing", description: "Algorithms, Cryptography" },
-    { id: "space_tech", title: "Space Technology", description: "Aerospace, Satellites" },
     { id: "advanced_materials", title: "Advanced Materials", description: "Nanotech, Composites" },
     { id: "energy", title: "Energy & Storage", description: "Solar, Battery Tech" },
     { id: "deep_infrastructure", title: "Deep Infrastructure", description: "Smart Cities, Transport" },
 
-    // 2. Creative Services
+    // 3. Creative Services
     { id: "ui_ux_design", title: "UI/UX Design", description: "Web & Mobile Interfaces" },
     { id: "graphic_design", title: "Graphic Design", description: "Branding, Identity" },
     { id: "product_design", title: "Product Design", description: "Industrial & Digital" },
@@ -182,7 +187,7 @@ const categories = [
     { id: "video_production", title: "Video Production", description: "Editing, Filming" },
     { id: "photography", title: "Photography", description: "Commercial, Product" },
 
-    // 3. Marketing & Consulting
+    // 4. Marketing & Consulting
     { id: "digital_marketing", title: "Digital Marketing", description: "SEO, PPC, Growth" },
     { id: "content_marketing", title: "Content Marketing", description: "Strategy, Blogs" },
     { id: "seo", title: "SEO & SEM", description: "Search Optimization" },
@@ -199,7 +204,7 @@ const categories = [
     { id: "product_management", title: "Product Management", description: "Roadmap, User Research" },
     { id: "operations", title: "Operations Management", description: "Logistics, Process" },
 
-    // 4. Writing Services
+    // 5. Writing Services
     { id: "content_writing", title: "Content Writing", description: "Articles, Web Copy" },
     { id: "copywriting", title: "Copywriting", description: "Sales, Advertising" },
     { id: "technical_writing", title: "Technical Writing", description: "Docs, Manuals" },
@@ -224,8 +229,21 @@ export const CategoryCarousel = () => {
         dragFree: false,
         duration: 45, // Adding "Duration" to make the transition animation smoother/slower
     }, [
-        Autoplay({ delay: 3000, stopOnInteraction: false })
+        Autoplay({ delay: 3000, stopOnInteraction: false, playOnInit: false })
     ]);
+
+    const containerRef = useRef<HTMLDivElement>(null);
+    const isInView = useInView(containerRef, { once: true, amount: 0.5 });
+
+    useEffect(() => {
+        if (!emblaApi) return;
+        const autoplay = emblaApi.plugins().autoplay;
+        if (!autoplay) return;
+
+        if (isInView) {
+            autoplay.play();
+        }
+    }, [emblaApi, isInView]);
 
     const [nodes, setNodes] = useState<HTMLElement[]>([]);
 
@@ -335,7 +353,7 @@ export const CategoryCarousel = () => {
                 </p>
             </div>
 
-            <div className="embla relative max-w-[1200px] mx-auto px-4 md:px-0">
+            <div className="embla relative max-w-[1200px] mx-auto px-4 md:px-0" ref={containerRef}>
                 <div className="overflow-visible" ref={emblaRef}>
                     <div className="flex touch-pan-y" style={{ transformStyle: 'preserve-3d' }}>
                         {categories.map((category, index) => (

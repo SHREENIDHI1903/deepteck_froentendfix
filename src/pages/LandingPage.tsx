@@ -301,7 +301,7 @@ export default function LandingPage() {
         HERO SECTION (Split Layout)
         ========================================
       */}
-      <section id="hero" ref={ref} className="relative min-h-screen flex items-start pt-6 pb-12 overflow-hidden bg-transparent">
+      <section id="hero" ref={ref} className="relative lg:min-h-[80vh] min-h-[90vh] flex items-center pt-6 pb-12 overflow-hidden bg-transparent">
         <HeroBackground />
 
         {/* Full Section Background Motion Slideshow */}
@@ -530,7 +530,7 @@ export default function LandingPage() {
 
             {/* Right Illustration - Slideshow */}
             <motion.div
-              className={`lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 ${isMobile ? 'min-h-[350px]' : 'lg:min-h-[600px]'}`}
+              className={`lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 ${isMobile ? 'min-h-[350px]' : 'lg:min-h-[500px]'}`}
               initial={{ opacity: 0, x: isMobile ? 0 : 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -545,7 +545,7 @@ export default function LandingPage() {
               )}
 
               {/* Animated Slideshow */}
-              <div className="relative w-[280px] h-[350px] lg:w-full lg:max-w-[550px] lg:aspect-[4/5]">
+              <div className="relative w-[280px] h-[350px] lg:w-full lg:max-w-[420px] lg:aspect-[4/5]">
                 <AnimatePresence mode="popLayout">
                   <motion.img
                     key={currentHeroImage}
