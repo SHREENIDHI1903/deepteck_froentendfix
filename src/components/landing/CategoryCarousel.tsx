@@ -319,7 +319,7 @@ export const CategoryCarousel = () => {
     }, [emblaApi]);
 
     return (
-        <section className="py-24 bg-white/90 relative overflow-hidden backdrop-filter-none">
+        <section className="py-24 bg-slate-50/80 relative overflow-hidden backdrop-filter-none">
             {/* Header */}
             <div className="container mx-auto px-4 mb-20 text-center relative z-10">
                 <motion.h2

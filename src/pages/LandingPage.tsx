@@ -717,11 +717,7 @@ export default function LandingPage() {
         FEATURED EXPERTS
         ========================================
       */}
-      <section id="experts" className="py-24 bg-slate-50/90 relative overflow-hidden backdrop-filter-none">
-        {/* Glow Effect */}
-        {/* Glow Effect - Increased Opacity */}
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-purple-500/15 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-indigo-500/15 blur-[120px] rounded-full pointer-events-none" />
+      <section id="experts" className="py-24 bg-slate-50/80 relative overflow-hidden backdrop-filter-none">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 mb-4">Highest Rated Experts</h2>
@@ -760,10 +756,7 @@ export default function LandingPage() {
         ENGAGEMENT MODELS
         ========================================
       */}
-      <section id="features" className="py-24 bg-white/90 relative overflow-hidden backdrop-filter-none">
-        {/* Center Glow */}
-        {/* Center Glow - Increased Opacity */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] bg-gradient-to-r from-indigo-500/15 to-purple-500/15 blur-[130px] rounded-full pointer-events-none" />
+      <section id="features" className="py-24 bg-slate-50/80 relative overflow-hidden backdrop-filter-none">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
